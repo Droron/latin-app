@@ -1,0 +1,131 @@
+#!/usr/bin/env python3
+"""Publish the course to GitHub (repo Droron/latin-app) – GitHub Actions then rebuilds and deploys Pages.
+
+Usage
+  scripts/publish [-m "message"] [--browser-tests]   build + tests, then prepare the push
+  scripts/publish --mark-published                   after a successful MCP push: record what was pushed
+  scripts/publish --status                           list files changed since the last publish
+
+How the push happens (in this order):
+  1. git:  if `git ls-remote` on the repo works with push rights (e.g. a credential helper or GH_TOKEN for gh),
+           a clone in .publish/repo is updated, committed and pushed.
+  2. MCP:  otherwise (the default on the agent box – no git credentials, by design) it writes
+           .publish/payload.json = {"calls": [...]} – each call is the exact arguments for the GitHub MCP tool
+           `push_files` (server user-GitHub-xai): {owner, repo, branch, message, files:[{path, content:"$file:/abs/path"}]},
+           at most 4 files per call (the MCP bridge's limit for "$file:" references; workflow files last).
+           The agent sends every call in order with CallDynamicTool, then runs `scripts/publish --mark-published`.
+Only source files are published (see PUBLISH below); site/, dist/ and generated data are rebuilt by CI.
+Files deleted locally are listed – remove them on GitHub with the MCP tool delete_file.
+"""
+import argparse, fnmatch, glob, hashlib, json, os, subprocess, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+OWNER, REPO, BRANCH = "Droron", "latin-app", "main"
+STATE = os.path.join(ROOT, ".publish", "state.json")
+PAYLOAD = os.path.join(ROOT, ".publish", "payload.json")
+PUBLISH = ["README.md", "CHANGELOG.md", "IDEAS.md", "LICENSE.md", ".gitignore", ".github/workflows/pages.yml",
+           "app/index.html", "app/styles.css", "app/app.js", "app/sw.js", "app/manifest.webmanifest", "app/icon.svg",
+           "lessons/L*.json", "data/core_lemmas.json", "data/curriculum.json", "data/names.json",
+           "scripts/*.py", "scripts/add_lesson", "scripts/generate_lesson", "scripts/validate_lesson", "scripts/publish",
+           "test/run.mjs", "test/test_validator.py"]
+
+
+def files():
+    out = []
+    for pat in PUBLISH:
+        out += [os.path.relpath(p, ROOT) for p in sorted(glob.glob(os.path.join(ROOT, pat), recursive=True)) if os.path.isfile(p)]
+    return sorted(set(out))
+
+
+def sha(p):
+    with open(os.path.join(ROOT, p), "rb") as fh:
+        return hashlib.sha256(fh.read()).hexdigest()
+
+
+def load_state():
+    return json.load(open(STATE)) if os.path.exists(STATE) else {"files": {}}
+
+
+def run(cmd, **kw):
+    print("$", " ".join(cmd)); return subprocess.run(cmd, cwd=ROOT, **kw)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-m", "--message")
+    ap.add_argument("--browser-tests", action="store_true")
+    ap.add_argument("--mark-published", action="store_true")
+    ap.add_argument("--status", action="store_true")
+    ap.add_argument("--all", action="store_true", help="include unchanged files too")
+    a = ap.parse_args()
+    os.makedirs(os.path.dirname(STATE), exist_ok=True)
+    st = load_state()
+    cur = {p: sha(p) for p in files()}
+    changed = [p for p in cur if a.all or st["files"].get(p) != cur[p]]
+    deleted = [p for p in st["files"] if p not in cur]
+    if a.mark_published:
+        pend = json.load(open(PAYLOAD)) if os.path.exists(PAYLOAD) else {"files": []}
+        for f in pend.get("files", []):
+            p = f["path"]
+            if p in cur:
+                st["files"][p] = pend.get("hashes", {}).get(p, cur[p])
+        for p in deleted:
+            st["files"].pop(p, None)
+        json.dump(st, open(STATE, "w"), indent=1)
+        print(f"recorded {len(pend.get('files', []))} published files"); return
+    if a.status:
+        print("\n".join(f"changed  {p}" for p in changed) or "nothing changed"); print("\n".join(f"deleted  {p}" for p in deleted)); return
+    # 1. build + tests (refuse to publish a broken course)
+    if run([sys.executable, "scripts/build.py"]).returncode:
+        sys.exit("build failed – not publishing")
+    if run([sys.executable, "test/test_validator.py"], stdout=subprocess.DEVNULL).returncode:
+        sys.exit("validator test failed – not publishing (run python3 test/test_validator.py)")
+    if a.browser_tests and run(["node", "--experimental-websocket", "test/run.mjs"]).returncode:
+        sys.exit("browser tests failed – not publishing")
+    cur = {p: sha(p) for p in files()}
+    changed = [p for p in cur if a.all or st["files"].get(p) != cur[p]]
+    if not changed and not deleted:
+        print("nothing to publish – GitHub is up to date"); return
+    n = len(glob.glob(os.path.join(ROOT, "lessons", "L*.json")))
+    msg = a.message or f"Update course: {n} lessons ({len(changed)} files)"
+    # 2. git, when credentials exist
+    url = f"https://github.com/{OWNER}/{REPO}.git"
+    can_git = run(["git", "ls-remote", "--heads", url], capture_output=True, env=dict(os.environ, GIT_TERMINAL_PROMPT="0")).returncode == 0 \
+        and os.environ.get("PUBLISH_VIA_GIT") == "1"
+    if can_git:
+        repo = os.path.join(ROOT, ".publish", "repo")
+        if not os.path.isdir(os.path.join(repo, ".git")):
+            run(["git", "clone", url, repo])
+        run(["git", "-C", repo, "pull", "--ff-only"])
+        import shutil
+        for p in changed:
+            os.makedirs(os.path.dirname(os.path.join(repo, p)) or repo, exist_ok=True)
+            shutil.copyfile(os.path.join(ROOT, p), os.path.join(repo, p))
+        for p in deleted:
+            if os.path.exists(os.path.join(repo, p)):
+                run(["git", "-C", repo, "rm", "-q", p])
+        run(["git", "-C", repo, "add", "-A"])
+        run(["git", "-C", repo, "commit", "-m", msg])
+        if run(["git", "-C", repo, "push", "origin", BRANCH]).returncode == 0:
+            st["files"] = cur; json.dump(st, open(STATE, "w"), indent=1); print("pushed with git"); return
+        print("git push failed – falling back to the MCP payload")
+    # 3. MCP payload for the agent
+    # the MCP bridge resolves at most 4 "$file:" references per call -> one push_files call per 4 files;
+    # .github/workflows/* goes last so CI only runs on a complete tree
+    order = sorted(changed, key=lambda p: (p.startswith(".github/"), p))
+    chunks = [order[i:i + 4] for i in range(0, len(order), 4)]
+    calls = [{"owner": OWNER, "repo": REPO, "branch": BRANCH,
+              "message": msg if len(chunks) == 1 else f"{msg} ({i + 1}/{len(chunks)})",
+              "files": [{"path": p, "content": "$file:" + os.path.join(ROOT, p)} for p in ch]} for i, ch in enumerate(chunks)]
+    payload = {"calls": calls, "files": [{"path": p} for p in order], "hashes": {p: cur[p] for p in changed}}
+    json.dump(payload, open(PAYLOAD, "w"), indent=1)
+    print(f"\n{len(changed)} changed file(s) in {len(calls)} push_files call(s) -> {PAYLOAD}")
+    print("Next: for each entry in payload['calls']: CallDynamicTool(namespace='user-GitHub-xai', toolName='push_files', arguments=entry);"
+          " then: scripts/publish --mark-published")
+    if deleted:
+        print("Deleted locally – remove on GitHub with delete_file:", ", ".join(deleted))
+
+
+if __name__ == "__main__":
+    main()

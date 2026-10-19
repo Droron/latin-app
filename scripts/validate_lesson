@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+"""Validate a lesson against the curriculum. Exit code 1 on any error.
+
+Usage: scripts/validate_lesson drafts/L004.json [--json]     (or lessons/L004.json; several files allowed)
+
+Rejects a lesson that
+  * uses a Latin word whose lemma is not taught in lessons 1..N (every token is lemmatized against the DCC core list),
+  * uses a form whose grammar is not taught yet (e.g. an accusative before the accusative rule),
+  * introduces a lemma that was already taught, or any lemma other than the curriculum's planned new ones,
+  * tags or teaches a grammar rule other than those taught so far + this lesson's one new rule,
+  * uses a proper name that is not whitelisted (data/names.json) or not glossed,
+  * recycles less than 30% or more than 50% of its exercises+drills from earlier lemmas (review: true),
+  * lacks a reading passage, or leaves a new lemma / the new rule unpractised.
+"""
+import json, os, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import curriculum_lib as C  # noqa: E402
+
+
+def main():
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    as_json = "--json" in sys.argv
+    if not args:
+        print(__doc__); sys.exit(2)
+    course, failed = C.Course(), False
+    for p in args:
+        lesson = C.load_json(p)
+        E, W, rep = C.validate(course, lesson)
+        rep.pop("_forms", None)
+        if as_json:
+            print(json.dumps({"file": p, "ok": not E, "errors": E, "warnings": W, "report": rep}, ensure_ascii=False, indent=1))
+        else:
+            print(f"{'PASS' if not E else 'FAIL'}  {p}  lesson {rep.get('lesson')}: {rep.get('items', 0)} items, review {rep.get('review', 0)} "
+                  f"({rep.get('reviewShare', 0):.0%}), {len(rep.get('lemmasUsed', []))} lemmas used, {len(rep.get('formsSeen', {}))} forms")
+            for e in E:
+                print("  ERROR  ", e)
+            for w in W:
+                print("  warning", w)
+        failed |= bool(E)
+    sys.exit(1 if failed else 0)
+
+
+if __name__ == "__main__":
+    main()
