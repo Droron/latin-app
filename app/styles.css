@@ -442,3 +442,27 @@ details.lemma summary::-webkit-details-marker { display: none; }
 a.stat { text-decoration: none; color: var(--ink); }
 a.tag { text-decoration: none; }
 .exrow .hint[style] { margin-top: 2px; }
+
+/* ---- navigation: header back control, quit confirmation, return banner, section progress */
+.back-btn { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; padding: 0 12px 0 4px; margin-left: -6px; border: 0; background: none; color: var(--accent); font: 600 16px/1 var(--sans); cursor: pointer; border-radius: 12px; max-width: 46vw; }
+.back-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.back-btn:active { transform: scale(.96); }
+.back-btn[hidden] { display: none; }
+.topbar .top-stats { margin-left: auto; }
+.topbar.has-back .brand { display: none; }
+@media (min-width: 720px) { .topbar.has-back .brand { display: flex; margin-left: 10px; } }
+.sheet-wrap { position: fixed; inset: 0; z-index: 80; background: rgba(20, 12, 6, .45); display: flex; align-items: flex-end; justify-content: center; opacity: 0; transition: opacity .18s; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+.sheet-wrap.show { opacity: 1; }
+.sheet { background: var(--card); color: var(--ink); border-radius: 22px; padding: 20px 18px 16px; width: 100%; max-width: 440px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.sheet h3 { font-size: 20px; margin: 0 0 6px; } .sheet p { margin: 0 0 16px; font-size: 15px; }
+@media (min-width: 720px) { .sheet-wrap { align-items: center; } }
+[data-sec] { scroll-margin-top: 78px; }
+.return-banner { display: flex; gap: 12px; align-items: center; margin: 24px 0 -6px; border: 1.5px solid var(--good, #3f7a3a); scroll-margin-top: 78px; animation: rbIn .5s ease; }
+.return-banner .rb-ico { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--good, #3f7a3a); color: #fff; }
+.return-banner .rb-ico svg { width: 18px; height: 18px; }
+.return-banner .rb-next { font-size: 13px; color: var(--muted); margin-top: 2px; }
+@keyframes rbIn { from { transform: translateY(8px); opacity: 0; } }
+.sec-done { vertical-align: 1px; margin-left: 6px; font-size: 10px; padding: 2px 7px; }
+.sec-done svg { width: 10px; height: 10px; vertical-align: -1px; }
+.word-link { color: inherit; text-decoration: none; border-bottom: 1.5px dotted var(--line, #d8c9b0); }
+.results .btn-block { margin-top: 4px; }

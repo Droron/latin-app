@@ -90,7 +90,7 @@
   const KEY = 'latina.v1';
   const defaults = () => ({ xp: 0, days: {}, srs: {}, answered: 0, correct: 0, sessions: 0, lessonsSeen: {}, bestMatch: null,
     settings: { theme: 'auto', rate: 0.85, goal: 50, newPerDay: 6 }, newToday: { day: '', n: 0 },
-    course: { reached: 1, done: {} }, rules: {} });
+    course: { reached: 1, done: {}, sections: {} }, rules: {} });
   let S;
   try {
     const d = defaults();
@@ -98,7 +98,7 @@
     S.settings = Object.assign(defaults().settings, S.settings); S.course = Object.assign(defaults().course, S.course); S.rules = S.rules || {};
   } catch (e) { S = defaults(); }
   if (META.curriculum && S.course.curriculum !== META.curriculum) {   // new course content: restart the course path, keep XP/streak/settings/word boxes
-    S.course = { reached: 1, done: {}, curriculum: META.curriculum }; S.rules = {};
+    S.course = { reached: 1, done: {}, sections: {}, curriculum: META.curriculum }; S.rules = {};
     try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* private mode */ }
   }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* private mode */ } };
@@ -107,6 +107,8 @@
   const reachedN = () => Math.min(LESSONS.length, Math.max(1, S.course.reached || 1));
   const isReached = l => l.n <= reachedN();
   const isDone = l => !!S.course.done[l.id];
+  const secDone = (lid, sec) => !!((S.course.sections || {})[lid] || {})[sec];
+  const markSec = (lid, ...secs) => { if (!LBY.has(lid)) return; S.course.sections = S.course.sections || {}; const o = S.course.sections[lid] = S.course.sections[lid] || {}; secs.forEach(x => o[x] = true); save(); };
   const currentLesson = () => LESSONS.find(l => !isDone(l)) || LESSONS[LESSONS.length - 1];
   const reach = l => { if (l && l.n > reachedN()) { S.course.reached = l.n; save(); } };
   const reachedLessons = () => LESSONS.filter(isReached);
@@ -271,34 +273,141 @@
   let toastT;
   function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2400); }
 
+  // ---------------------------------------------------------------- navigation
+  // Every screen is a hash URL, so each navigation is a real history entry and the browser / iOS swipe-back
+  // gesture works (also in the installed app). history.state.idx numbers the entries; NAV.stack mirrors them
+  // (sessionStorage, per tab – not progress) so the app knows what the previous screen was and can return to it.
+  const ROOTS = new Set(['today', 'library', 'practice', 'review', 'stats']);
+  const NAVKEY = 'latina.nav';
+  let NAV = (() => { try { const n = JSON.parse(sessionStorage.getItem(NAVKEY)); if (n && Array.isArray(n.stack)) return n; } catch (e) { } return { stack: [], y: [], idx: -1 }; })();
+  NAV.y = NAV.y || [];
+  let navReplacing = false, RETURN = null, SESSION = null, CUR = '#/today';
+  const hashOf = () => (location.hash && location.hash !== '#' && location.hash !== '#/') ? location.hash : '#/today';
+  const parseHash = h => { const [path, qs] = h.replace(/^#\/?/, '').split('?'); return { parts: path.split('/'), q: new URLSearchParams(qs || '') }; };
+  const isSessionHash = h => { const { parts: p } = parseHash(h); return (p[0] === 'lesson' && p[2] === 'start') || (p[0] === 'grammar' && p[2] === 'practice') || (p[0] === 'practice' && !!p[1]) || (p[0] === 'review' && p[1] === 'go'); };
+  const isRootHash = h => { const { parts: p } = parseHash(h); return ROOTS.has(p[0] || 'today') && !p[1]; };
+  function navName(h) {
+    const { parts: p } = parseHash(h);
+    switch (p[0]) {
+      case 'lesson': { const l = LBY.get(p[1]); return l ? `Lesson ${l.n}` : 'Lesson'; }
+      case 'grammar': { const r = p[1] && RBY.get(p[1]); return r ? `Rule ${r.number}` : 'Grammar'; }
+      case 'words': { const e = p[1] && LEXBY.get(decodeURIComponent(p[1])); return e ? e.lemma : 'Lexicon'; }
+      case 'library': return 'Course'; case 'practice': return 'Practice'; case 'review': return 'Review'; case 'stats': return 'Progress';
+      default: return 'Today';
+    }
+  }
+  function parentOf(h) {
+    const { parts: p } = parseHash(h);
+    if (p[0] === 'grammar' && p[1]) return '#/grammar';
+    if (p[0] === 'words' && p[1]) return '#/words';
+    return '#/library';
+  }
+  const prevHash = () => NAV.stack[NAV.idx - 1];
+  function navTrack() {
+    const h = hashOf(), st = history.state;
+    if (st && typeof st.idx === 'number' && !navReplacing) NAV.idx = st.idx;          // back / forward / reload
+    else {
+      NAV.idx = navReplacing ? Math.max(NAV.idx, 0) : NAV.idx + 1;                   // a new entry (or a replaced one)
+      NAV.stack.length = NAV.idx; NAV.y.length = NAV.idx;
+      try { history.replaceState({ idx: NAV.idx }, ''); } catch (e) { }
+    }
+    navReplacing = false; NAV.stack[NAV.idx] = h;
+    try { sessionStorage.setItem(NAVKEY, JSON.stringify(NAV)); } catch (e) { }
+  }
+  // replace the current entry (redirects, leaving a finished session) so Back never lands on a dead screen
+  function replaceTo(h) { navReplacing = true; if (location.hash === h) route(); else location.replace(h); }
+  const go = h => { if (location.hash === h) route(); else location.hash = h; };
+  // return to h: step back if it is the previous entry (keeps history clean), otherwise replace this one
+  function returnTo(h, ret) { RETURN = ret ? Object.assign({ origin: h }, ret) : null; if (prevHash() === h) history.back(); else replaceTo(h); }
+  function backTo(h) { if (prevHash() === h) history.back(); else go(h); }
+  // header back control: "‹ Lesson 3"
+  let backAction = null;
+  function setBack(label, action) {
+    const b = $('#backBtn'); if (!b) return;
+    backAction = action || null;
+    b.hidden = !label; $('.topbar').classList.toggle('has-back', !!label);
+    if (label) { b.querySelector('span').textContent = label; b.setAttribute('aria-label', 'Back to ' + label); }
+  }
+  function screenBack(h) {
+    if (isRootHash(h)) return setBack(null);
+    const p = prevHash();
+    const dest = p && p !== h && !isSessionHash(p) ? p : parentOf(h);
+    setBack(navName(dest), () => backTo(dest));
+  }
+  function confirmSheet(title, body, yes, no) {
+    return new Promise(res => {
+      $$('.sheet-wrap').forEach(x => x.remove());
+      const w = document.createElement('div'); w.className = 'sheet-wrap';
+      w.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetT"><h3 id="sheetT">${esc(title)}</h3><p class="muted">${esc(body)}</p>
+        <div class="row2"><button class="btn" id="sheetNo">${esc(no)}</button><button class="btn btn-bad" id="sheetYes">${esc(yes)}</button></div></div>`;
+      document.body.appendChild(w); requestAnimationFrame(() => w.classList.add('show'));
+      const done = v => { document.removeEventListener('keydown', kh, true); w.remove(); res(v); };
+      const kh = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); } };
+      document.addEventListener('keydown', kh, true);
+      w.onclick = e => { if (e.target === w) done(false); };
+      $('#sheetNo', w).onclick = () => done(false); $('#sheetYes', w).onclick = () => done(true);
+      setTimeout(() => $('#sheetNo', w)?.focus(), 30);
+    });
+  }
+  // leave a session early: confirm when answers have been given, then go back where it was launched from
+  async function quitSession() {
+    const ss = SESSION; if (!ss) return;
+    if (ss.started && !ss.finished && !(await confirmSheet('Leave this session?', `Your answers so far are saved. You'll go back to ${navName(ss.origin)}.`, 'Leave', 'Keep going'))) return;
+    if (SESSION !== ss) return;
+    ss.finished = true; SESSION = null;
+    returnTo(ss.origin, ss.sec ? { sec: ss.sec, quit: true } : null);
+  }
+
   // ---------------------------------------------------------------- router
   const view = () => $('#view');
   let cleanup = null;
   function setView(html, tab) {
     if (cleanup) { try { cleanup(); } catch (e) { } cleanup = null; }
     document.body.classList.remove('in-session');
-    $$('.feedback, .confetti').forEach(x => x.remove());
+    $$('.feedback, .confetti, .sheet-wrap').forEach(x => x.remove());
     const v = view(); v.innerHTML = html; v.classList.remove('view-enter'); void v.offsetWidth; v.classList.add('view-enter');
     renderTabs(tab); window.scrollTo(0, 0);
+    if (isSessionHash(CUR)) setBack(null); else screenBack(CUR);
   }
   function route() {
-    const h = location.hash.replace(/^#\/?/, '') || 'today';
-    const [path, qs] = h.split('?'); const parts = path.split('/'); const q = new URLSearchParams(qs || '');
+    navTrack();
+    const h = hashOf(); CUR = h;
+    if (SESSION && SESSION.hash !== h) { if (SESSION.started && !SESSION.finished) toast('Session closed – your answers so far are saved'); SESSION = null; }
+    const savedY = NAV.y[NAV.idx] || 0, ret = RETURN; RETURN = null;
+    const { parts, q } = parseHash(h);
+    const nav = { from: q.get('from'), sec: q.get('sec') };
     try {
       switch (parts[0]) {
-        case 'today': return viewToday();
-        case 'library': return viewLibrary();
-        case 'lesson': return parts[2] === 'start' ? startSession('course', parts[1]) : viewLesson(parts[1]);
-        case 'words': return viewLexicon();
-        case 'grammar': return parts[1] ? (parts[2] === 'practice' ? startSession('rule', parts[1]) : viewRule(parts[1])) : viewGrammar();
-        case 'practice': return parts[1] ? startSession(parts[1], q.get('scope') || 'all') : viewPractice(q.get('scope'));
-        case 'review': return parts[1] === 'go' ? startSession('review', 'all') : viewReview();
-        case 'stats': return viewStats();
-        default: return viewToday();
+        case 'today': viewToday(); break;
+        case 'library': viewLibrary(); break;
+        case 'lesson': parts[2] === 'start' ? startSession('course', parts[1], nav) : viewLesson(parts[1]); break;
+        case 'words': parts[1] ? viewWord(decodeURIComponent(parts[1])) : viewLexicon(); break;
+        case 'grammar': parts[1] ? (parts[2] === 'practice' ? startSession('rule', parts[1], nav) : viewRule(parts[1])) : viewGrammar(); break;
+        case 'practice': parts[1] ? startSession(parts[1], q.get('scope') || 'all', nav) : viewPractice(q.get('scope')); break;
+        case 'review': parts[1] === 'go' ? startSession('review', 'all', nav) : viewReview(); break;
+        case 'stats': viewStats(); break;
+        default: viewToday();
       }
-    } catch (e) { console.error(e); setView(`<div class="card">Something went wrong: ${esc(e.message)}</div>`, ''); }
+    } catch (e) { console.error(e); setView(`<div class="card">Something went wrong: ${esc(e.message)}</div>`, ''); return; }
+    if (ret && ret.origin === h) applyReturn(ret);
+    else if (savedY && !isSessionHash(h)) requestAnimationFrame(() => window.scrollTo(0, savedY));   // Back restores where you were
   }
-  const go = h => { if (location.hash === h) route(); else location.hash = h; };
+  let yT; window.addEventListener('scroll', () => { clearTimeout(yT); yT = setTimeout(() => { if (NAV.stack[NAV.idx] === hashOf()) { NAV.y[NAV.idx] = Math.round(window.scrollY); try { sessionStorage.setItem(NAVKEY, JSON.stringify(NAV)); } catch (e) { } } }, 120); }, { passive: true });
+
+  // launching a session from inside a lesson remembers where it came from (origin + section)
+  const SEC_NAME = { words: 'Words', grammar: 'Grammar', examples: 'Example sentences', exercises: 'Exercises', reading: 'Reading', practice: 'Practice', next: 'Next lesson' };
+  const launch = (h, origin, sec) => origin ? `${h}${h.includes('?') ? '&' : '?'}from=${encodeURIComponent(origin)}${sec ? `&sec=${sec}` : ''}` : h;
+  function applyReturn(ret) {
+    const el = ret.sec && $('#sec-' + ret.sec);
+    if (!el) return;
+    const all = $$('[data-sec]'), i = all.indexOf(el), target = ret.quit ? el : (all[i + 1] || el);
+    if (!ret.quit && ret.summary) {
+      const b = document.createElement('div'); b.className = 'card return-banner'; b.id = 'returnBanner';
+      b.innerHTML = `<span class="rb-ico">${I.check}</span><div><b>${esc(ret.summary.title)}</b> · ${esc(ret.summary.score)} · +${ret.summary.xp} XP<div class="rb-next">${target !== el ? `Next: ${esc(SEC_NAME[target.dataset.sec] || '')}` : 'Well done'}</div></div>`;
+      target.parentNode.insertBefore(b, target);
+      requestAnimationFrame(() => b.scrollIntoView({ block: 'start' }));
+    } else requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
+  }
 
   // ---------------------------------------------------------------- course path widgets
   const STATE_LABEL = { done: 'Completed', current: 'Current lesson', reached: 'Started', upcoming: 'Up next' };
@@ -315,11 +424,13 @@
   }
 
   // ---------------------------------------------------------------- lesson rendering
-  function lessonBody(l) {
+  function lessonBody(l, origin) {
     const s = l.source || {};
+    const dn = sec => secDone(l.id, sec) ? `<span class="tag green sec-done">${I.check} done</span>` : '';
+    const L = (h, sec) => launch(h, origin, sec);
     const vocab = l.vocab.map((v, i) => `
       <article class="card vcard">
-        <div class="top"><div><div class="vnum">${i + 1}</div><div class="word">${esc(v.la)}</div>${v.dict ? `<div class="pron">${esc(v.dict)}</div>` : ''}${v.pron ? `<div class="pron">${esc(v.pron)}</div>` : ''}</div>${speakBtn(v.la)}</div>
+        <div class="top"><div><div class="vnum">${i + 1}</div><div class="word">${LEXBY.has(v.id) && LEXBY.get(v.id).pos !== 'proper noun' ? `<a class="word-link" href="#/words/${encodeURIComponent(v.id)}">${esc(v.la)}</a>` : esc(v.la)}</div>${v.dict ? `<div class="pron">${esc(v.dict)}</div>` : ''}${v.pron ? `<div class="pron">${esc(v.pron)}</div>` : ''}</div>${speakBtn(v.la)}</div>
         <div class="en">${esc(v.en)}</div>
         <div class="tags">${v.pos ? `<span class="tag">${esc(v.pos)}</span>` : ''}${v.gender ? `<span class="tag red">${v.gender === 'f' ? 'feminine' : v.gender === 'm' ? 'masculine' : 'neuter'}</span>` : ''}${v.decl ? `<span class="tag">${['', '1st', '2nd', '3rd', '4th', '5th'][v.decl] || v.decl} decl.</span>` : ''}${v.source === 'example' ? '<span class="tag green">from an example</span>' : ''}</div>
         ${v.notes ? `<div class="note">${md(v.notes)}</div>` : ''}
@@ -337,25 +448,25 @@
     return `
       ${l.intro ? `<p class="muted" style="font-size:16px;margin:18px 2px 0">${md(l.intro)}</p>` : ''}
       ${s.truncated ? `<div class="notice" style="margin-top:16px">${I.info}<div><b>Partial lesson.</b> ${esc(s.truncatedNote || 'The email was cut off.')} ${s.continueUrl ? `<a href="${esc(s.continueUrl)}" target="_blank" rel="noopener">Open the full session ↗</a>` : ''}</div></div>` : ''}
-      <section class="section"><div class="section-head"><div><div class="eyebrow">1 · Verba</div><h2 class="section-title">Words <small>${l.vocab.length}</small></h2></div>
-        <a class="link-btn" href="#/practice/flash?scope=${l.id}">Flashcards →</a></div><div class="vocab-grid">${vocab}</div></section>
-      ${grammar ? `<section class="section"><div class="section-head"><div><div class="eyebrow">2 · Grammatica</div><h2 class="section-title">Grammar</h2></div>
-        <a class="link-btn" href="#/practice/fill?scope=${l.id}">Drill →</a></div>${grammar}</section>` : ''}
-      ${examples ? `<section class="section"><div class="section-head"><div><div class="eyebrow">Exempla</div><h2 class="section-title">Example sentences</h2></div></div><div class="exlist">${examples}</div></section>` : ''}
-      ${exList ? `<section class="section"><div class="section-head"><div><div class="eyebrow">3 · Exercitia</div><h2 class="section-title">Exercises <small>${ex.length + (l.drills || []).length}</small></h2></div>
-        <a class="link-btn" href="#/practice/email?scope=${l.id}">Do them →</a></div><div class="exlist">${exList}</div></section>` : ''}
-      ${l.reading ? `<section class="section"><div class="eyebrow">4 · Lectio</div><h2 class="section-title" style="margin-bottom:12px">Translate the paragraph</h2>
-        <div class="card exrow" data-toggle>${speakBtn(l.reading.la, true)}<div class="txt"><div class="la">${esc(l.reading.la)}</div>${l.reading.hint ? `<div class="hint" style="display:block">${md(l.reading.hint)}</div>` : ''}<div class="tr">${esc(l.reading.en)}</div><div class="hint">Tap to reveal the translation</div></div></div></section>` : ''}
-      <section class="section"><div class="section-head"><div><div class="eyebrow">Exercitatio</div><h2 class="section-title">Practise this lesson</h2></div></div>
-        <a class="btn btn-primary btn-block" href="#/lesson/${l.id}/start" style="margin-bottom:12px">${I.play} ${isDone(l) ? 'Redo' : 'Start'} Lesson ${l.n} step by step</a>
-        ${modeTiles(l.id)}</section>
+      <section class="section" id="sec-words" data-sec="words"><div class="section-head"><div><div class="eyebrow">1 · Verba ${dn('words')}</div><h2 class="section-title">Words <small>${l.vocab.length}</small></h2></div>
+        <a class="link-btn" href="${L(`#/practice/flash?scope=${l.id}`, 'words')}">Flashcards →</a></div><div class="vocab-grid">${vocab}</div></section>
+      ${grammar ? `<section class="section" id="sec-grammar" data-sec="grammar"><div class="section-head"><div><div class="eyebrow">2 · Grammatica ${dn('grammar')}</div><h2 class="section-title">Grammar</h2></div>
+        <a class="link-btn" href="${L(`#/practice/fill?scope=${l.id}`, 'grammar')}">Drill →</a></div>${grammar}</section>` : ''}
+      ${examples ? `<section class="section" id="sec-examples" data-sec="examples"><div class="section-head"><div><div class="eyebrow">Exempla</div><h2 class="section-title">Example sentences</h2></div></div><div class="exlist">${examples}</div></section>` : ''}
+      ${exList ? `<section class="section" id="sec-exercises" data-sec="exercises"><div class="section-head"><div><div class="eyebrow">3 · Exercitia ${dn('exercises')}</div><h2 class="section-title">Exercises <small>${ex.length}</small></h2></div>
+        <a class="link-btn" id="doExercises" href="${L(`#/practice/email?scope=${l.id}`, 'exercises')}">Do them →</a></div><div class="exlist">${exList}</div></section>` : ''}
+      ${l.reading ? `<section class="section" id="sec-reading" data-sec="reading"><div class="eyebrow">4 · Lectio ${dn('reading')}</div><h2 class="section-title" style="margin-bottom:12px">Translate the paragraph</h2>
+        <div class="card exrow" data-toggle data-reading>${speakBtn(l.reading.la, true)}<div class="txt"><div class="la">${esc(l.reading.la)}</div>${l.reading.hint ? `<div class="hint" style="display:block">${md(l.reading.hint)}</div>` : ''}<div class="tr">${esc(l.reading.en)}</div><div class="hint">Tap to reveal the translation</div></div></div></section>` : ''}
+      <section class="section" id="sec-practice" data-sec="practice"><div class="section-head"><div><div class="eyebrow">Exercitatio ${dn('practice')}</div><h2 class="section-title">Practise this lesson</h2></div></div>
+        <a class="btn btn-primary btn-block" href="${L(`#/lesson/${l.id}/start`, 'practice')}" style="margin-bottom:12px">${I.play} ${isDone(l) ? 'Redo' : 'Start'} Lesson ${l.n} step by step</a>
+        ${modeTiles(l.id, origin, 'practice')}</section>
       ${(l.notes || []).length ? `<section class="section"><div class="eyebrow">Notae</div>${l.notes.map(n => `<p class="muted">${md(n)}</p>`).join('')}</section>` : ''}
-      ${lessonNav(l)}
+      <div id="sec-next" data-sec="next">${lessonNav(l)}</div>
       <div class="meander"></div>
       <p class="muted" style="font-size:12px;text-align:center;margin-top:10px">Lesson ${l.n} of ${META.plannedLessons || LESSONS.length} planned · ${(l.vocab || []).length} new words from the DCC core list · ${esc(l.rule ? 'new rule: ' + ((RBY.get(l.rule) || {}).title || l.rule) : 'review lesson')}</p>`;
   }
   function bindLesson(l) {
-    $$('[data-toggle]').forEach(r => r.addEventListener('click', e => { if (!e.target.closest('.speak')) r.classList.toggle('open'); }));
+    $$('[data-toggle]').forEach(r => r.addEventListener('click', e => { if (e.target.closest('.speak, a')) return; r.classList.toggle('open'); if (r.hasAttribute('data-reading') && r.classList.contains('open')) markSec(l.id, 'reading'); }));
     S.lessonsSeen[l.id] = true; save();
   }
 
@@ -389,20 +500,19 @@
         ${cur !== l && !isDone(cur) ? `<a class="btn btn-block" style="margin-top:10px" href="#/lesson/${cur.id}/start">${I.play} Continue the course: Lesson ${cur.n}</a>` : ''}
         <div class="mini-stats"><a href="#/words"><b>${LEX.stats.lemmaCount}</b> lemmas</a><a href="#/words"><b>${LEX.stats.formCount}</b> forms</a><a href="#/grammar"><b>${RULES.length}</b> grammar rules</a></div>
       </section>
-      ${lessonBody(l)}`, 'today');
+      ${lessonBody(l, '#/today')}`, 'today');
     bindLesson(l);
   }
 
   function viewLesson(id) {
     const l = LBY.get(id);
-    if (!l) return go('#/library');
+    if (!l) return replaceTo('#/library');
     setView(`
-      <a class="link-btn" href="#/library">← Course</a>
       ${pathStrip(l.id)}
       <div class="eyebrow" style="margin-top:10px">Lesson ${l.n} of ${LESSONS.length} · ${fmtDate(l.date)} · ${STATE_LABEL[lessonState(l)]}</div>
       <h1 style="font-size:30px;margin-top:4px">${esc(l.title)}</h1>
       ${l.subtitle ? `<div class="muted la" style="margin-top:4px">${esc(l.subtitle)}</div>` : ''}
-      ${lessonBody(l)}`, 'library');
+      ${lessonBody(l, `#/lesson/${l.id}`)}`, 'library');
     bindLesson(l);
   }
 
@@ -450,9 +560,10 @@
           ${d.formsSeen.map(f => `<tr><td>${esc(f.form)}</td><td>${esc(f.parse || '')}</td><td style="font-style:normal">${f.lessons.join(', ')}</td><td>${speakBtn(f.form, true)}</td></tr>`).join('')}</tbody></table>
           ${e.note ? `<p class="muted" style="font-size:14px;margin:8px 0 0">${md(e.note)}</p>` : ''}
           ${e.inferred && e.inferred.length ? `<p class="muted" style="font-size:13px;margin:6px 0 0">* Inferred (not stated in the lessons): ${esc(e.inferred.join(', '))}.</p>` : ''}
+          <a class="link-btn" href="#/words/${encodeURIComponent(e.id)}">Word page →</a>
         </div></details>`;
     };
-    setView(`<a class="link-btn" href="#/library">← Course</a><div class="eyebrow" style="margin-top:6px">Lexicon</div>
+    setView(`<div class="eyebrow">Lexicon</div>
       <section class="card lex-hero"><div class="bignum"><b id="lemmaCount">${st.lemmaCount}</b><span>lemmas</span></div><div class="bignum"><b>${st.formCount}</b><span>forms seen</span></div>
         <div class="bignum"><b>${counts.known}</b><span>known</span></div></section>
       <div class="tags" style="margin:12px 0">${Object.entries(st.byPos).map(([p, n]) => `<span class="tag">${esc(POS_LABEL[p] || p)} ${n}</span>`).join('')}</div>
@@ -467,12 +578,29 @@
     });
   }
 
+  function viewWord(id) {
+    const e = LEXBY.get(id); if (!e || !e.derived || e.pos === 'proper noun') return replaceTo('#/words');
+    const d = e.derived, s = lemmaStatus(e), w = ALL_WORDS.find(x => x.id === id), ls = (w ? w.lessons : [LESSONS[d.firstLesson - 1]?.id]).map(x => LBY.get(x)).filter(Boolean);
+    const i = LEMMAS.indexOf(e), prev = LEMMAS[i - 1], next = LEMMAS[i + 1];
+    setView(`<div class="eyebrow">Lexicon · word ${i + 1} of ${LEMMAS.length}</div>
+      <article class="card vcard" style="margin-top:8px"><div class="top"><div><div class="word">${esc(e.lemma)}</div>${e.entry ? `<div class="pron">${esc(e.entry)}</div>` : ''}</div>${speakBtn(e.lemma)}</div>
+        <div class="en">${esc(e.en)}</div>
+        <div class="tags"><span class="tag">${esc(e.pos)}</span>${lemmaMeta(e) ? `<span class="tag">${esc(lemmaMeta(e))}</span>` : ''}${e.rank ? `<span class="tag green">DCC #${e.rank}</span>` : ''}<span class="tag ${STATUS_TAG[s]}">${s}</span></div>
+        ${e.note ? `<div class="note">${md(e.note)}</div>` : ''}</article>
+      <section class="section card"><h3 style="font-size:17px;margin-bottom:6px">Forms you have seen</h3><table class="gt"><thead><tr><th>Form</th><th>Parse</th><th>Lessons</th><th></th></tr></thead><tbody>
+        ${d.formsSeen.map(f => `<tr><td>${esc(f.form)}</td><td>${esc(f.parse || '')}</td><td style="font-style:normal">${f.lessons.join(', ')}</td><td>${speakBtn(f.form, true)}</td></tr>`).join('')}</tbody></table></section>
+      ${w && w.examples.length ? `<section class="section"><div class="eyebrow">Exempla</div><div class="exlist" style="margin-top:10px">${w.examples.map(x => `<div class="card exrow open">${speakBtn(x.la, true)}<div class="txt"><div class="la">${esc(x.la)}</div><div class="tr">${esc(x.en)}</div></div></div>`).join('')}</div></section>` : ''}
+      <section class="section card"><h3 style="font-size:17px;margin-bottom:6px">Where you met it</h3><p class="muted" style="margin:0">${ls.map(l => `<a href="#/lesson/${l.id}">Lesson ${l.n}: ${esc(l.title)}</a>`).join('<br>')}</p></section>
+      <div class="lesson-nav">${prev ? `<a class="card nav-card" href="#/words/${encodeURIComponent(prev.id)}">${I.left}<div><small>Previous word</small><b>${esc(prev.lemma)}</b></div></a>` : '<span></span>'}
+      ${next ? `<a class="card nav-card next" href="#/words/${encodeURIComponent(next.id)}"><div><small>Next word</small><b>${esc(next.lemma)}</b></div>${I.right}</a>` : '<span></span>'}</div>`, 'library');
+  }
+
   // ---------------------------------------------------------------- grammar
   const RSTAT = { 'not started': '', practising: 'red', mastered: 'green' };
   const ruleItems = r => quizFor(r).length;
   function viewGrammar() {
     const learned = RULES.filter(ruleReached).length, mastered = RULES.filter(r => ruleProgress(r).status === 'mastered').length;
-    setView(`<a class="link-btn" href="#/library">← Course</a><div class="eyebrow" style="margin-top:6px">Grammatica</div>
+    setView(`<div class="eyebrow">Grammatica</div>
       <h1 style="font-size:30px;margin:4px 0 6px">Grammar rules</h1>
       <p class="muted" style="margin:0 0 14px">In the order you meet them. ${learned} of ${RULES.length} reached · ${mastered} mastered.</p>
       <div class="rules">${RULES.map((r, i) => {
@@ -484,11 +612,10 @@
       }).join('')}</div>`, 'library');
   }
   function viewRule(id) {
-    const r = RBY.get(id); if (!r) return go('#/grammar');
+    const r = RBY.get(id); if (!r) return replaceTo('#/grammar');
     const p = ruleProgress(r), open = ruleReached(r), n = ruleItems(r);
     const prev = RULES[r.number - 2], next = RULES[r.number];
-    setView(`<a class="link-btn" href="#/grammar">← Grammar</a>
-      <div class="eyebrow" style="margin-top:6px">Rule ${r.number} of ${RULES.length} · introduced in Lesson ${r.introducedIn}</div>
+    setView(`<div class="eyebrow">Rule ${r.number} of ${RULES.length} · introduced in Lesson ${r.introducedIn}</div>
       <h1 style="font-size:28px;margin:4px 0 12px">${esc(r.title)}</h1>
       <article class="card gcard"><p>${md(r.explanation)}</p></article>
       ${r.examples.length ? `<section class="section"><div class="eyebrow">Exempla</div><div class="exlist" style="margin-top:10px">${r.examples.map(e => `<div class="card exrow open">${speakBtn(e.la, true)}<div class="txt"><div class="la">${esc(e.la)}</div><div class="tr">${esc(e.en)}${e.lessons && e.lessons.length ? ` · Lesson ${e.lessons.join(', ')}` : ''}</div></div></div>`).join('')}</div></section>` : ''}
@@ -496,8 +623,8 @@
         <p class="muted" style="margin:0;font-size:15px">Introduced: <a href="#/lesson/${LESSONS[r.introducedIn - 1].id}">Lesson ${r.introducedIn}</a>${r.reinforcedIn.length ? ` · Reinforced: ${r.reinforcedIn.map(x => `<a href="#/lesson/${LESSONS[x - 1].id}">Lesson ${x}</a>`).join(', ')}` : ''}</p>
         <div class="stat-grid" style="margin-top:12px"><div class="stat"><b>${p.status === 'not started' ? '–' : p.acc + '%'}</b><span>Accuracy</span></div><div class="stat"><b>${p.n}</b><span>Answers</span></div>
         <div class="stat"><b>${n}</b><span>Exercises</span></div><div class="stat"><b style="font-size:16px">${p.status}</b><span>Status</span></div></div></section>
-      ${open && n ? `<a class="btn btn-primary btn-block" style="margin-top:16px" href="#/grammar/${r.id}/practice">${I.play} Practise this rule only</a>`
-        : `<p class="muted" style="text-align:center">${open ? 'No exercises for this rule yet.' : `Unlocks when you reach Lesson ${r.introducedIn}.`}</p>`}
+      ${open && n ? `<a class="btn btn-primary btn-block" style="margin-top:16px" href="${launch(`#/grammar/${r.id}/practice`, `#/grammar/${r.id}`)}">${I.play} Practise this rule only</a>`
+        : `<p class="muted" style="text-align:center">${open ? 'No exercises for this rule yet.' : `Unlocks when you reach <a href="#/lesson/${LESSONS[r.introducedIn - 1].id}">Lesson ${r.introducedIn}</a>.`}</p>`}
       <div class="lesson-nav">${prev ? `<a class="card nav-card" href="#/grammar/${prev.id}">${I.left}<div><small>Rule ${prev.number}</small><b>${esc(prev.title)}</b></div></a>` : '<span></span>'}
       ${next ? `<a class="card nav-card next" href="#/grammar/${next.id}"><div><small>Rule ${next.number}</small><b>${esc(next.title)}</b></div>${I.right}</a>` : '<span></span>'}</div>`, 'library');
   }
@@ -513,11 +640,11 @@
     ['listen', 'Listen', 'Hear it, choose the meaning', I.ear],
     ['email', 'Lesson exercises', "Each lesson's own questions", I.mail],
   ];
-  function modeTiles(scope) {
+  function modeTiles(scope, origin, sec) {
     const emailCount = lessonsFor(scope).reduce((n, l) => n + (l.exercises || []).length, 0);
     return `<div class="modes">${MODES.map(([k, t, d, ic], i) => {
       const off = k === 'email' && !emailCount;
-      return `<button class="mode" data-mode="${k}" data-scope="${scope}" style="animation-delay:${i * .03}s" ${off ? 'disabled' : ''}><span class="ico">${ic}</span><b>${t}</b><span>${off ? 'None yet' : k === 'email' ? `${emailCount} questions` : d}</span></button>`;
+      return ` <button class="mode" data-mode="${k}" data-scope="${scope}"${origin ? ` data-from="${esc(origin)}" data-sec="${sec || ''}"` : ''} style="animation-delay:${i * .03}s" ${off ? 'disabled' : ''}><span class="ico">${ic}</span><b>${t}</b><span>${off ? 'None yet' : k === 'email' ? `${emailCount} questions` : d}</span></button>`;
     }).join('')}</div>`;
   }
   function viewPractice(scope) {
@@ -528,7 +655,7 @@
       <div class="seg" id="scopes"><button data-s="all" class="${scope === 'all' ? 'on' : ''}">Lessons 1–${rn} · ${reachedWords().length} words</button>${LESSONS.map(l => `<button data-s="${l.id}" class="${scope === l.id ? 'on' : ''}">Lesson ${l.n}${isReached(l) ? '' : ' 🔒'}</button>`).join('')}</div>
       <a class="btn btn-primary btn-block" href="#/practice/mix?scope=${scope}" style="margin-bottom:14px">${I.practice} Mixed session</a>
       ${modeTiles(scope)}`, 'practice');
-    $$('#scopes button').forEach(b => b.addEventListener('click', () => go(`#/practice?scope=${b.dataset.s}`)));
+    $$('#scopes button').forEach(b => b.addEventListener('click', () => replaceTo(`#/practice?scope=${b.dataset.s}`)));
   }
 
   function viewReview() {
@@ -707,29 +834,40 @@
   }
 
   // ---------------------------------------------------------------- session runner
-  function sessionShell(mode, scope) {
-    const back = mode === 'review' ? '#/review' : mode === 'course' ? `#/lesson/${scope}` : mode === 'rule' ? `#/grammar/${scope}` : '#/practice';
-    setView(`<div class="session-top"><a class="icon-btn" href="${back}" aria-label="Quit session">${I.close}</a><div class="progress"><i id="prog"></i></div><span class="counter" id="ctr"></span></div><div id="stage"></div>`,
-      mode === 'review' ? 'review' : mode === 'course' || mode === 'rule' ? 'library' : 'practice');
-    document.body.classList.add('in-session');
+  const tabOfHash = h => { const p = parseHash(h).parts[0] || 'today'; return ROOTS.has(p) ? p : 'library'; };
+  const TAB_OF = ss => tabOfHash(ss.origin);   // a session belongs to the tab it was launched from
+  function sessionOrigin(mode, scope, nav) {
+    const f = nav && nav.from;
+    if (f && /^#\//.test(f) && !isSessionHash(f)) return f;
+    const p = prevHash(); if (p && !isSessionHash(p)) return p;
+    return mode === 'review' ? '#/review' : mode === 'course' ? `#/lesson/${scope}` : mode === 'rule' ? `#/grammar/${scope}` : '#/practice' + (scope && scope !== 'all' ? '?scope=' + scope : '');
   }
-  function startSession(mode, scope) {
+  function sessionShell(ss) {
+    setView(`<div class="session-top"><button class="icon-btn" id="quitBtn" aria-label="Quit session">${I.close}</button><div class="progress"><i id="prog"></i></div><span class="counter" id="ctr"></span></div><div id="stage"></div>`, TAB_OF(ss));
+    document.body.classList.add('in-session');
+    setBack(navName(ss.origin), quitSession);
+    $('#quitBtn').onclick = quitSession;
+  }
+  function emptySession(ss, msg) {
+    setView(`<div class="results"><h2>Nothing to do here</h2><p class="muted">${msg}</p><button class="btn btn-primary" id="emptyBack">Back to ${esc(navName(ss.origin))}</button></div>`, TAB_OF(ss));
+    setBack(navName(ss.origin), quitSession); $('#emptyBack').onclick = quitSession;
+  }
+  function startSession(mode, scope, nav) {
+    const ss = SESSION = { mode, scope, hash: CUR, origin: sessionOrigin(mode, scope, nav), sec: nav && nav.sec, lesson: LBY.has(scope) ? scope : null, started: false, finished: false };
+    if (ss.sec && !SEC_NAME[ss.sec]) ss.sec = null;
     if (mode === 'course') reach(LBY.get(scope));
     else if (mode !== 'rule' && scope !== 'all' && LBY.has(scope)) reach(LBY.get(scope));
-    if (mode === 'flash') return flashSession(scope);
-    if (mode === 'match') return matchSession(scope);
+    if (mode === 'flash') return flashSession(ss);
+    if (mode === 'match') return matchSession(ss);
     let queue = buildQueue(mode, scope);
-    const tab = mode === 'review' ? 'review' : mode === 'course' || mode === 'rule' ? 'library' : 'practice';
-    if (!queue.length) {
-      setView(`<div class="results"><h2>Nothing to do here</h2><p class="muted">${mode === 'review' ? 'No words are due and today\'s new words are done. Come back later!' : mode === 'email' ? 'No lesson exercises in these lessons (the early emails were cut off).' : 'No items for this selection.'}</p><a class="btn btn-primary" href="#/practice">Practice instead</a></div>`, tab);
-      return;
-    }
+    if (!queue.length) return emptySession(ss, mode === 'review' ? 'No words are due and today\'s new words are done. Come back later!' : mode === 'email' ? 'No exercises in this selection yet.' : 'No items for this selection.');
     if (mode === 'review') { S.newToday.n += queue.filter(q => q.isNew).length; save(); }
-    sessionShell(mode, scope);
+    sessionShell(ss);
     let i = 0, right = 0, graded = 0, xp = 0, total = queue.length; const requeued = new Set();
     const stage = $('#stage');
     const keyH = e => {
       const fb = $('.feedback.show');
+      if ($('.sheet-wrap')) return;
       if (fb && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); fb.querySelector('.next-btn')?.click(); return; }
       if (!fb && /^[1-4]$/.test(e.key) && !/INPUT|TEXTAREA/.test(document.activeElement?.tagName)) { $$('.choice')[+e.key - 1]?.click(); }
     };
@@ -772,7 +910,7 @@
         else h += `<form id="tf" autocomplete="off"><input class="answer-input" id="ans" placeholder="${q.lang === 'la' ? 'Latine…' : 'In English…'}" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done"><div class="input-help">Capitals, macrons (ā), punctuation and “the/a” are optional · small typos forgiven</div><div class="row2"><button type="button" class="btn" id="skip">I don't know</button><button class="btn btn-primary" type="submit">Check</button></div></form>`;
       }
       stage.innerHTML = h + '</div>';
-      $('#cont', stage)?.addEventListener('click', advance);
+      $('#cont', stage)?.addEventListener('click', () => { ss.started = true; advance(); });
       if (q.kind === 'self') {
         $('#reveal').onclick = () => {
           $('#model').innerHTML = `<div class="card" style="margin:6px 0 12px"><div class="q-label">Model answer</div><div style="font-size:18px;margin-top:4px">${esc(q.answer)}</div>${q.explain ? `<div class="muted" style="font-size:14px;margin-top:6px">${md(q.explain)}</div>` : ''}</div>
@@ -796,7 +934,7 @@
       }
     }
     function answer(q, ok, closeInput, selfGraded) {
-      graded++;
+      graded++; ss.started = true;
       if (ok) { right++; xp += 10; } else if (!requeued.has(q) && mode === 'review') { requeued.add(q); queue.push(Object.assign({}, q, { isNew: false })); total++; }
       if (q.word) (mode === 'review' ? review : practiceResult)(q.word.id, ok);
       else { S.answered++; if (ok) S.correct++; save(); }
@@ -819,30 +957,45 @@
     function finish() {
       $('#prog').style.width = '100%';
       const bonus = graded && right === graded ? 20 : 0;
-      let extra = '';
-      if (mode === 'course') {
-        const l = LBY.get(scope), next = LESSONS[l.n]; S.course.done[l.id] = true; save();
-        extra = `<p><b>Lesson ${l.n} complete.</b></p>${next ? `<a class="btn btn-primary btn-block" style="margin-bottom:10px" href="#/lesson/${next.id}">Next: Lesson ${next.n} →</a>` : '<p class="muted">That was the latest lesson – a new one arrives with the next email.</p>'}`;
-      }
-      endScreen(mode, scope, { right, total: graded, xp: xp + bonus, perfect: !!bonus, extra });
+      endScreen(ss, { right, total: graded, xp: xp + bonus, perfect: !!bonus });
     }
     show();
   }
 
-  function endScreen(mode, scope, r) {
+  // end of any session: summary, then back to where it was launched from
+  function endScreen(ss, r) {
+    if (SESSION !== ss) return;   // user already navigated away
+    ss.finished = true;
     S.sessions++; save(); addXP(r.xp);
+    const { mode, scope } = ss;
     const acc = r.total ? Math.round(r.right / r.total * 100) : 100;
     const title = acc === 100 ? 'Perfectum!' : acc >= 80 ? 'Optime!' : acc >= 50 ? 'Bene!' : 'Perge!';
     const sub = acc === 100 ? 'Flawless – a perfect round.' : acc >= 80 ? 'Excellent work.' : acc >= 50 ? 'Good – keep going.' : 'Keep going – repetition is the mother of learning.';
     document.body.classList.remove('in-session'); $$('.feedback').forEach(x => x.remove());
-    const doneHref = mode === 'review' ? '#/review' : mode === 'course' ? `#/lesson/${scope}` : mode === 'rule' ? `#/grammar/${scope}` : '#/practice?scope=' + scope;
-    $('#stage').innerHTML = `<div class="results">${LAUREL}<h2>${title}</h2><p class="muted">${sub}${r.perfect ? ' +20 bonus XP' : ''}</p>
-      <div class="grid3"><div class="stat"><b>+${r.xp}</b><span>XP</span></div><div class="stat"><b>${acc}%</b><span>Accuracy</span></div><div class="stat"><b>${streak()}</b><span>Streak</span></div></div>
-      ${r.extra || ''}
-      <div class="row2"><a class="btn" href="${doneHref}">Done</a><button class="btn btn-primary" id="again">Again</button></div></div>`;
-    $('#again').onclick = () => startSession(mode, scope);
-    renderTabs(mode === 'review' ? 'review' : mode === 'course' || mode === 'rule' ? 'library' : 'practice');
+    const what = mode === 'course' ? `Lesson ${LBY.get(scope).n}` : ss.sec ? SEC_NAME[ss.sec] : 'Session';
+    const summary = { title: mode === 'course' ? `${what} complete` : `${what} done`, score: `${r.right}/${r.total} right`, xp: r.xp };
+    let l = null, next = null;
+    if (mode === 'course') { l = LBY.get(scope); next = LESSONS[l.n]; S.course.done[l.id] = true; markSec(l.id, 'words', 'grammar', 'examples', 'exercises', 'reading', 'practice'); }
+    else if (ss.lesson && ss.sec) markSec(ss.lesson, ss.sec);
+    const fromLesson = /^#\/(lesson\/|today)/.test(ss.origin) && ss.sec;
+    const back = () => returnTo(ss.origin, ss.sec ? { sec: ss.sec, summary } : null);
+    let primary, secondary = '';
+    if (mode === 'course' && next) { primary = `<button class="btn btn-primary btn-block" id="nextLesson">Next: Lesson ${next.n} →</button>`; secondary = `<button class="btn" id="doneBtn">Back to ${esc(navName(ss.origin))}</button>`; }
+    else if (fromLesson) primary = `<button class="btn btn-primary btn-block" id="continueLesson">Continue lesson ${I.right}</button>`;
+    else { primary = `<button class="btn btn-primary btn-block" id="doneBtn">Back to ${esc(navName(ss.origin))}</button>`; }
+    $('#stage').innerHTML = `<div class="results">${LAUREL}<h2>${title}</h2><p class="muted">${esc(summary.title)} · ${sub}${r.perfect ? ' +20 bonus XP' : ''}</p>
+      <div class="grid3"><div class="stat"><b>${r.right}/${r.total}</b><span>Score</span></div><div class="stat"><b>+${r.xp}</b><span>XP</span></div><div class="stat"><b>${acc}%</b><span>Accuracy</span></div></div>
+      ${r.extra || ''}${mode === 'course' ? `<p><b>Lesson ${l.n} complete.</b>${next ? '' : ' That is the newest lesson – the next one appears when it is written.'}</p>` : ''}
+      ${primary}
+      ${secondary ? `<div class="row2" style="margin-top:10px">${secondary}<button class="btn" id="again">Again</button></div>` : `<button class="btn btn-block" id="again" style="margin-top:10px">Again</button>`}</div>`;
+    $('#continueLesson') && ($('#continueLesson').onclick = back);
+    $('#doneBtn') && ($('#doneBtn').onclick = back);
+    $('#nextLesson') && ($('#nextLesson').onclick = () => { SESSION = null; replaceTo(`#/lesson/${next.id}`); });
+    $('#again').onclick = () => { SESSION = null; route(); };
+    setBack(navName(ss.origin), back); $('#quitBtn').onclick = back;
+    renderTabs(TAB_OF(ss));
     if (acc >= 80) confetti();
+    setTimeout(() => ($('#continueLesson') || $('#nextLesson') || $('#doneBtn'))?.focus({ preventScroll: true }), 80);
   }
   function confetti() {
     const c = document.createElement('div'); c.className = 'confetti';
@@ -852,9 +1005,9 @@
   }
 
   // flashcards (deck in lesson order)
-  function flashSession(scope) {
-    const deck = wordsFor(scope); if (!deck.length) return go('#/practice');
-    sessionShell('flash', scope);
+  function flashSession(ss) {
+    const scope = ss.scope, deck = wordsFor(scope); if (!deck.length) return emptySession(ss, 'No words in this selection yet.');
+    sessionShell(ss);
     let i = 0, known = 0, reverse = false;
     const stage = $('#stage');
     function show() {
@@ -875,14 +1028,14 @@
       $('#dirLa').onclick = () => { reverse = false; show(); }; $('#dirEn').onclick = () => { reverse = true; show(); };
       $('#again').onclick = () => next(false); $('#got').onclick = () => next(true);
     }
-    function next(ok) { practiceResult(deck[i].id, ok); if (ok) known++; i++; i < deck.length ? show() : endScreen('flash', scope, { right: known, total: deck.length, xp: deck.length * 3 }); }
+    function next(ok) { ss.started = true; practiceResult(deck[i].id, ok); if (ok) known++; i++; i < deck.length ? show() : endScreen(ss, { right: known, total: deck.length, xp: deck.length * 3 }); }
     show();
   }
 
   // match pairs: the 5 weakest words (lesson order); tile positions shuffled
-  function matchSession(scope) {
-    const set = pickWeak(wordsFor(scope), 5); if (!set.length) return go('#/practice');
-    sessionShell('match', scope);
+  function matchSession(ss) {
+    const scope = ss.scope, set = pickWeak(wordsFor(scope), 5); if (!set.length) return emptySession(ss, 'No words in this selection yet.');
+    sessionShell(ss);
     const t0 = Date.now(); let done = 0, mistakes = 0, sel = null;
     const left = shuffle(set), right = shuffle(set);
     $('#ctr').textContent = `0/${set.length}`;
@@ -895,6 +1048,7 @@
       if (b.classList.contains('done')) return;
       if (b.dataset.side === 'la') speak(set.find(w => w.id === b.dataset.id).la);
       if (!sel || sel.dataset.side === b.dataset.side) { $$('.tile.sel').forEach(x => x.classList.remove('sel')); sel = b; b.classList.add('sel'); return; }
+      ss.started = true;
       if (sel.dataset.id === b.dataset.id) {
         sel.classList.remove('sel'); sel.classList.add('done'); b.classList.add('done'); done++;
         $('#prog').style.width = `${done / set.length * 100}%`; $('#ctr').textContent = `${done}/${set.length}`;
@@ -902,7 +1056,7 @@
         if (done === set.length) {
           clearInterval(tick); const secs = Math.round((Date.now() - t0) / 100) / 10;
           const best = !S.bestMatch || secs < S.bestMatch; if (best && mistakes === 0) S.bestMatch = secs; save();
-          setTimeout(() => endScreen('match', scope, { right: set.length, total: set.length + mistakes, xp: set.length * 5 + (mistakes ? 0 : 10),
+          setTimeout(() => endScreen(ss, { right: set.length, total: set.length + mistakes, xp: set.length * 5 + (mistakes ? 0 : 10),
             extra: `<p class="muted">${secs}s · ${mistakes} mistake${mistakes === 1 ? '' : 's'}${best && !mistakes ? ' · new best time!' : ''}</p>` }), 450);
         }
       } else {
@@ -916,12 +1070,15 @@
   // ---------------------------------------------------------------- global events
   document.addEventListener('click', e => {
     const s = e.target.closest('[data-say]'); if (s) { e.preventDefault(); e.stopPropagation(); speak(s.dataset.say, s); return; }
-    const m = e.target.closest('[data-mode]'); if (m && !m.disabled) { go(`#/practice/${m.dataset.mode}?scope=${m.dataset.scope}`); }
+    const m = e.target.closest('[data-mode]'); if (m && !m.disabled) { go(launch(`#/practice/${m.dataset.mode}?scope=${m.dataset.scope}`, m.dataset.from, m.dataset.sec)); return; }
+    const b = e.target.closest('#backBtn'); if (b && backAction) { e.preventDefault(); backAction(); }
   });
   $('#themeBtn').addEventListener('click', () => {
     const dark = document.documentElement.dataset.theme === 'dark'; S.settings.theme = dark ? 'light' : 'dark'; save(); applyTheme();
   });
   window.addEventListener('hashchange', route);
+  // Escape = back (desktop); in a session it asks first
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('.sheet-wrap') && !$('.feedback.show') && backAction && !/INPUT|TEXTAREA/.test(document.activeElement?.tagName)) { e.preventDefault(); backAction(); } });
 
   // service worker (multi-file / GitHub Pages version only): offline + picks up new builds
   if ('serviceWorker' in navigator && !window.LATIN_SINGLE_FILE && /^https?:$/.test(location.protocol)) {
@@ -936,7 +1093,7 @@
   }
 
   // test hooks (harmless in production)
-  window.LatinApp = { grade, norm, words: ALL_WORDS, lessons: LESSONS, rules: RULES, lexicon: LEX, state: () => S, current: null, quizFor: id => quizFor(RBY.get(id)) };
+  window.LatinApp = { grade, norm, words: ALL_WORDS, lessons: LESSONS, rules: RULES, lexicon: LEX, state: () => S, current: null, quizFor: id => quizFor(RBY.get(id)), nav: () => ({ idx: NAV.idx, stack: NAV.stack.slice(), session: SESSION && { origin: SESSION.origin, sec: SESSION.sec, started: SESSION.started, finished: SESSION.finished } }) };
 
   applyTheme(); renderChips(); route();
 })();

@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.1 – 2026-10-19 · navigation
+- **Sessions return to where they were launched from.** Exercises, flashcards, drills and practice started inside a lesson end with a
+  summary (score, XP) and a **Continue lesson** button that goes back to that lesson, scrolled to the next section (e.g. the reading),
+  with a "✓ Exercises done · 8/8 right · +100 XP" banner. The section is marked done (✓ on its heading; stored in `course.sections`,
+  same `latina.v1` key, nothing reset). Practice tab → back to Practice (same scope), Review → Review, a grammar rule → that rule,
+  Today → Today. A finished lesson offers **Next: Lesson n+1** and **Back to …**.
+- **History-aware navigation.** Every screen is a history entry with a numbered `history.state` and a per-tab navigation stack, so the
+  browser / iOS swipe-back gesture works in the installed app. Leaving a finished session replaces its entry (Back never lands in a finished
+  session and restarts it); redirects and the Practice scope buttons no longer add history entries; Back restores the scroll position.
+- **Header back control** on every non-root screen, named after the destination ("‹ Lesson 3", "‹ Lexicon", "‹ Rule 3", "‹ Course");
+  it replaces the hard-coded "← Course"/"← Grammar" links. Escape also goes back on desktop.
+- **Quit with confirmation**: the X (and header back) in a session asks "Leave this session?" once you have answered something; it returns to
+  the section you launched from. The session's tab stays highlighted (Course for lesson sessions, not Practice).
+- New **word page** (`#/words/<id>`): dictionary entry, forms seen, examples, lessons, previous/next word; linked from lesson word cards and the Lexicon.
+- Dead ends fixed: "Nothing to do here" screens now go back to their origin; "Unlocks when you reach Lesson n" links to the lesson.
+- Tests: 43 navigation checks per viewport in `test/run.mjs` (phone + desktop); `test/nav_shots.mjs` takes the before/after screenshots.
+
 ## 2.0 – 2026-10-19 · self-written frequency course
 - **New content pipeline.** The email lessons are retired (archived locally in `archive/email-lessons/`, not shown) because they re-taught words
   as new and asked for untaught words. Lessons are now written from `data/curriculum.json`, built on the DCC Latin Core Vocabulary
