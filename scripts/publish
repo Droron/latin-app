@@ -28,7 +28,7 @@ PUBLISH = ["README.md", "CHANGELOG.md", "IDEAS.md", "LICENSE.md", ".gitignore", 
            "app/index.html", "app/styles.css", "app/app.js", "app/sw.js", "app/manifest.webmanifest", "app/icon.svg",
            "lessons/L*.json", "data/core_lemmas.json", "data/curriculum.json", "data/names.json",
            "scripts/*.py", "scripts/add_lesson", "scripts/generate_lesson", "scripts/validate_lesson", "scripts/publish",
-           "test/run.mjs", "test/test_validator.py"]
+           "test/run.mjs", "test/nav_shots.mjs", "test/test_validator.py"]
 
 
 def files():

@@ -127,6 +127,13 @@ the course path and rule stats restart but XP, streak, settings and spaced-repet
 use *Progress → Backup → Export/Import* to move progress between the file version, Safari and the Home-Screen app.
 The service worker is network-first with an offline cache; each build has a new version and the app shows "updated" when it changes.
 
+**Navigation.** Hash routes (`#/today`, `#/lesson/L003`, `#/words/<id>`, `#/grammar/<rule>`, sessions such as
+`#/practice/email?scope=L003&from=%23%2Flesson%2FL003&sec=exercises`). Each navigation is a history entry numbered in `history.state.idx`;
+a per-tab stack (`sessionStorage` `latina.nav`, not progress) knows the previous screen, so the header shows "‹ <previous screen>" and the
+system back gesture works. A session's origin is its `from` parameter, else the previous screen; finishing or quitting returns there
+(`history.back()` when it is the previous entry, otherwise the entry is replaced). With `sec=…` the lesson reopens scrolled to the next
+section with a summary banner, and `course.sections[lesson][sec]` is set.
+
 ## Publishing
 
 `scripts/publish` builds, runs the validator test (`--browser-tests` adds the Chrome suite), then pushes the **source** files to

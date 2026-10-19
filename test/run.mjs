@@ -199,6 +199,140 @@ async function suite(vp) {
   check(`${tag} no horizontal overflow`, await ev(`document.documentElement.scrollWidth <= window.innerWidth + 1`));
 }
 
+// ---- navigation: every session returns to where it was launched from; back controls; history / swipe-back
+async function navSuite(vp) {
+  const tag = vp.name + ' nav';
+  await send('Emulation.setDeviceMetricsOverride', { width: vp.w, height: vp.h, deviceScaleFactor: vp.dpr, mobile: vp.mobile }, S);
+  await fresh();
+  await ev(`(()=>{const s=JSON.parse(localStorage.getItem('latina.v1')||'{}'); s.course={reached:3,done:{L001:true,L002:true},sections:{},curriculum:'dcc-core-v1'}; localStorage.setItem('latina.v1',JSON.stringify(s))})()`);
+  await send('Page.reload', {}, S); await sleep(900);
+  const H = () => ev('location.hash');
+  const back = async () => { await ev('history.back()'); await sleep(500); };
+  const backLabel = () => ev(`(()=>{const b=document.querySelector('#backBtn'); return b && !b.hidden ? b.textContent.trim() : null})()`);
+  const tabOn = () => ev(`(document.querySelector('#tabbar a.on')||{}).dataset?.tab||''`);
+  const inSession = () => exists('.session-top');
+  const sessionNoResults = async () => (await inSession()) && !(await exists('.results'));
+
+  // roots have no back control; non-root screens do, named after the destination
+  await nav('#/today');
+  check(`${tag}: root screens have no back control`, (await backLabel()) === null);
+  await nav('#/library'); await nav('#/lesson/L003');
+  check(`${tag}: lesson header back names where you came from`, (await backLabel()) === 'Course', String(await backLabel()));
+
+  // 1. exercises launched inside a lesson → summary → Continue lesson → same lesson, scrolled to the next section
+  await click('#doExercises'); await sleep(400);
+  const nv = await ev('LatinApp.nav()');
+  check(`${tag}: exercises remember their origin + section`, nv.session && nv.session.origin === '#/lesson/L003' && nv.session.sec === 'exercises', JSON.stringify(nv.session));
+  check(`${tag}: session header shows "‹ Lesson 3", Course tab stays active`, (await backLabel()) === 'Lesson 3' && (await tabOn()) === 'library', `${await backLabel()} / ${await tabOn()}`);
+  const ex = await runSession(`${tag}: lesson 3 exercises`);
+  const sum = await ev(`[...document.querySelectorAll('.results .stat')].map(s=>s.textContent.trim()).join(' | ')`);
+  check(`${tag}: end screen has score, XP and a "Continue lesson" primary button`, (await exists('#continueLesson.btn-primary')) && sum.includes(`${ex.ok}/${ex.graded}`) && /\+\d+XP/.test(sum.replace(/\s/g, '')), sum);
+  await shot(`${vp.name}-end-of-exercises`);
+  await click('#continueLesson'); await sleep(700);
+  const rb = await ev(`(()=>{const b=document.querySelector('#returnBanner'); if(!b) return null; const r=b.getBoundingClientRect(); return {txt:b.textContent, top:Math.round(r.top), next:b.nextElementSibling&&b.nextElementSibling.id, y:Math.round(scrollY)}})()`);
+  check(`${tag}: back on the same lesson (not Practice)`, (await H()) === '#/lesson/L003' && !(await inSession()), await H());
+  check(`${tag}: scrolled to the section after the exercises (reading), with a summary`, rb && rb.next === 'sec-reading' && rb.top >= 0 && rb.top < vp.h / 2 && rb.y > 300 && /Exercises done/.test(rb.txt) && /XP/.test(rb.txt), JSON.stringify(rb));
+  check(`${tag}: exercises section marked done`, (await ev(`!!LatinApp.state().course.sections.L003.exercises`)) && (await exists('#sec-exercises .sec-done')));
+  await shot(`${vp.name}-back-in-lesson`);
+  check(`${tag}: back header after returning = Course`, (await backLabel()) === 'Course', String(await backLabel()));
+  await back();
+  check(`${tag}: Back after finishing never re-enters the finished session`, (await H()) === '#/library' && !(await inSession()), await H());
+
+  // reading reveal marks it done
+  await nav('#/lesson/L003'); await click('[data-reading]');
+  check(`${tag}: revealing the reading marks it done`, await ev(`!!LatinApp.state().course.sections.L003.reading`));
+
+  // 3. quitting: no confirmation before answering; confirmation once started; returns to the launching section
+  await nav('#/lesson/L003');
+  await click('#sec-words a[href*="practice/flash"]'); await sleep(400);
+  await click('#quitBtn'); await sleep(500);
+  check(`${tag}: quitting an untouched session needs no confirmation`, (await H()) === '#/lesson/L003' && !(await exists('.sheet-wrap')), await H());
+  await click('#sec-words a[href*="practice/flash"]'); await sleep(400);
+  await click('#fc'); await click('#got');
+  await click('#quitBtn'); await sleep(200);
+  check(`${tag}: X during a session asks for confirmation`, await exists('.sheet-wrap #sheetYes'));
+  await click('#sheetNo'); await sleep(200);
+  check(`${tag}: "Keep going" stays in the session`, (await sessionNoResults()) && !(await exists('.sheet-wrap')));
+  await click('#backBtn'); await sleep(200);
+  check(`${tag}: header back during a session also asks`, await exists('.sheet-wrap'));
+  await click('#sheetYes'); await sleep(700);
+  const qy = await ev(`(()=>{const r=document.querySelector('#sec-words').getBoundingClientRect(); return Math.round(r.top)})()`);
+  check(`${tag}: leaving returns to the lesson at the section it came from`, (await H()) === '#/lesson/L003' && qy >= 0 && qy < 200, `${await H()} top=${qy}`);
+  check(`${tag}: quitting does not mark the section done`, !(await ev(`!!LatinApp.state().course.sections.L003.words`)));
+
+  // 2. swipe-back / browser back mid-session returns to origin
+  await click('#sec-grammar a[href*="practice/fill"]'); await sleep(400);
+  await ev(`(${ANSWER})(true)`);
+  await back();
+  check(`${tag}: swipe-back mid-session returns to the lesson`, (await H()) === '#/lesson/L003' && !(await inSession()), await H());
+
+  // 2. every other origin: Practice tab, Review, Grammar rule
+  await nav('#/practice'); await click('#scopes button[data-s="L002"]'); await sleep(300);
+  await click('.mode[data-mode="mc"]'); await sleep(400);
+  check(`${tag}: Practice session header "‹ Practice"`, (await backLabel()) === 'Practice');
+  await runSession(`${tag}: practice mc`);
+  check(`${tag}: practice end screen offers "Back to Practice"`, (await ev(`(document.querySelector('#doneBtn')||{}).textContent||''`)) === 'Back to Practice');
+  await click('#doneBtn'); await sleep(600);
+  check(`${tag}: practice returns to the Practice tab with its scope`, (await H()) === '#/practice?scope=L002' && (await ev(`document.querySelector('#scopes .on').dataset.s`)) === 'L002', await H());
+  await nav('#/review'); await click('a[href="#/review/go"]'); await sleep(400);
+  await runSession(`${tag}: review`, { maxQ: 80 });
+  await click('#doneBtn'); await sleep(600);
+  check(`${tag}: review returns to Review`, (await H()) === '#/review', await H());
+  await nav('#/grammar'); await nav('#/grammar/verb-3sg');
+  check(`${tag}: rule detail back = Grammar`, (await backLabel()) === 'Grammar');
+  await click('a[href*="/grammar/verb-3sg/practice"]'); await sleep(400);
+  await runSession(`${tag}: rule practice`);
+  await click('#doneBtn'); await sleep(600);
+  check(`${tag}: rule practice returns to the rule`, (await H()) === '#/grammar/verb-3sg' && (await backLabel()) === 'Grammar', `${await H()} ${await backLabel()}`);
+
+  // lesson → rule tag → back restores the lesson scroll position
+  await nav('#/lesson/L003');
+  await ev(`document.querySelector('a.tag[href="#/grammar/verb-3sg"]').scrollIntoView({block:'center'})`); await sleep(300);
+  const y0 = await ev('Math.round(scrollY)');
+  await click('a.tag[href="#/grammar/verb-3sg"]'); await sleep(500);
+  check(`${tag}: rule opened from a lesson says "‹ Lesson 3"`, (await backLabel()) === 'Lesson 3', String(await backLabel()));
+  await click('#backBtn'); await sleep(700);
+  const y1 = await ev('Math.round(scrollY)');
+  check(`${tag}: header back returns to the lesson where you were`, (await H()) === '#/lesson/L003' && Math.abs(y1 - y0) < 40, `${y0} → ${y1}`);
+
+  // word detail: from lexicon and from a lesson word
+  await nav('#/words'); await ev(`document.querySelector('details.lemma').open=true`);
+  await click('details.lemma[open] a[href^="#/words/"]'); await sleep(400);
+  check(`${tag}: word page from Lexicon says "‹ Lexicon"`, (await H()).startsWith('#/words/') && (await backLabel()) === 'Lexicon' && (await exists('#view .vcard .word')));
+  await shot(`${vp.name}-word`);
+  await click('#backBtn'); await sleep(500);
+  check(`${tag}: word page back → Lexicon`, (await H()) === '#/words');
+  await nav('#/lesson/L001'); await click('.vcard a.word-link'); await sleep(400);
+  check(`${tag}: word page from a lesson says "‹ Lesson 1"`, (await backLabel()) === 'Lesson 1');
+
+  // course step-by-step from the lesson → next lesson; back returns to the previous lesson, not the session
+  await nav('#/lesson/L001'); await click('#sec-practice a[href*="/lesson/L001/start"]'); await sleep(400);
+  await runSession(`${tag}: course lesson 1`, { maxQ: 80 });
+  check(`${tag}: finished lesson offers "Next: Lesson 2" and "Back to Lesson 1"`, (await exists('#nextLesson')) && (await ev(`document.querySelector('#doneBtn').textContent`)) === 'Back to Lesson 1');
+  await click('#nextLesson'); await sleep(600);
+  check(`${tag}: Next goes to Lesson 2`, (await H()) === '#/lesson/L002');
+  await back();
+  check(`${tag}: Back from there → Lesson 1 (session not in history)`, (await H()) === '#/lesson/L001' && !(await inSession()), await H());
+
+  // dead ends: bad links redirect without polluting history; deep links still get a back control; empty sessions offer a way back
+  await nav('#/library'); await nav('#/lesson/NOPE'); await sleep(300);
+  check(`${tag}: unknown lesson redirects to Course`, (await H()) === '#/library');
+  await nav('#/stats'); await nav('#/practice/flash?scope=L999'); await sleep(200);
+  check(`${tag}: empty session has a way back`, (await exists('#emptyBack')) && (await ev(`document.querySelector('#emptyBack').textContent`)) === 'Back to Progress');
+  await click('#emptyBack'); await sleep(500);
+  check(`${tag}: …which returns to Progress`, (await H()) === '#/stats');
+  await ev(`sessionStorage.clear(); history.replaceState(null,'','#/lesson/L002')`); await send('Page.reload', {}, S); await sleep(900);
+  check(`${tag}: deep-linked lesson still has a back control (Course)`, (await backLabel()) === 'Course');
+  await click('#backBtn'); await sleep(500);
+  check(`${tag}: …which opens Course`, (await H()) === '#/library');
+  if (!vp.mobile) {
+    await nav('#/grammar/verb-3sg');
+    await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }, S); await sleep(500);
+    check(`${tag}: Escape goes back`, (await H()) === '#/library', await H());
+  }
+  check(`${tag}: no horizontal overflow with back control`, await ev(`document.documentElement.scrollWidth <= window.innerWidth + 1`));
+}
+
 async function pwa() {
   const base = URL0.replace(/[^/]*$/, '');
   const man = await ev(`fetch('manifest.webmanifest').then(r=>r.json())`);
@@ -224,7 +358,7 @@ async function pwa() {
 }
 
 const VPS = [{ name: 'phone', w: 390, h: 844, dpr: 3, mobile: true }, { name: 'desktop', w: 1280, h: 860, dpr: 1, mobile: false }];
-try { for (const vp of VPS) await suite(vp); if (HTTP) await pwa(); }
+try { for (const vp of VPS) { await suite(vp); await navSuite(vp); } if (HTTP) await pwa(); }
 catch (e) { results.push(['FAIL', 'harness', e.message]); }
 for (const r of results) console.log(r.join('  '));
 console.log(errors.length ? 'JS ERRORS:\n' + errors.join('\n') : 'No JS errors');
