@@ -1,0 +1,850 @@
+{
+ "id": "dcc-core-v1",
+ "version": 1,
+ "title": "Lingua Latina – frequency-based beginner course",
+ "source": "Lemma choice and frequency ranks: DCC Latin Core Vocabulary (data/core_lemmas.json, CC BY-SA 3.0).",
+ "principles": [
+  "Lessons are taught strictly in order; each one introduces 5–8 new lemmas and at most one new grammar rule.",
+  "Lemmas are chosen by DCC frequency rank AND teachability: function words and the commonest verbs/nouns first, but only when the grammar to use them has been taught.",
+  "A lesson may only use lemmas taught in this or earlier lessons, in forms unlocked by rules taught so far (scripts/validate_lesson enforces this).",
+  "30–50% of each lesson's exercises and drills recycle earlier lemmas for review (marked review: true).",
+  "A taught lemma is never re-introduced as new; proper names are allowed only from data/names.json and must be glossed in the lesson that first uses them.",
+  "Lessons 18 and 24 are consolidation lessons with no new grammar."
+ ],
+ "rules": [
+  {
+   "id": "est-sentences",
+   "lesson": 1,
+   "title": "Sentences with est – no articles",
+   "summary": "*est* means 'is'. Latin has no words for 'the' or 'a': *puella* = 'girl', 'the girl' or 'a girl'. A noun ending in -a (like *puella*) is the subject; an adjective describing her also ends in -a (*bona*). *nōn* goes before the word it negates.",
+   "unlocks": [
+    "Vsum.pres.3sg",
+    "N1.*.nom.sg",
+    "A12.f.nom.sg"
+   ],
+   "number": 1
+  },
+  {
+   "id": "nominative-plural",
+   "lesson": 2,
+   "title": "Plural subjects: -ae and sunt",
+   "summary": "More than one: *puella* → *puellae*, and *est* → *sunt* ('are'). Adjectives follow their noun: *puellae bonae*.",
+   "unlocks": [
+    "Vsum.pres.3pl",
+    "N1.*.nom.pl",
+    "A12.f.nom.pl"
+   ],
+   "number": 2
+  },
+  {
+   "id": "verb-3sg",
+   "lesson": 3,
+   "title": "Verbs: -t = he / she / it does",
+   "summary": "A verb ending in -t has a he/she/it subject: *stat* 'stands', *ridet* 'laughs'. The dictionary form ends in -ō (*stō*, *rīdeō*); -at verbs are 1st conjugation, -et verbs 2nd. The verb usually comes last.",
+   "unlocks": [
+    "V1.pres.3sg",
+    "V2.pres.3sg"
+   ],
+   "number": 3
+  },
+  {
+   "id": "accusative-singular",
+   "lesson": 4,
+   "title": "The object: -am",
+   "summary": "The person or thing on the receiving end (the direct object) changes its ending: *puella* → *puellam*. *Puella silvam videt* 'The girl sees the forest'. Because the ending marks the object, word order is free – but subject-object-verb is the usual pattern.",
+   "unlocks": [
+    "N1.*.acc.sg",
+    "A12.f.acc.sg"
+   ],
+   "number": 4
+  },
+  {
+   "id": "verb-3pl",
+   "lesson": 5,
+   "title": "Verbs: -nt = they do",
+   "summary": "A plural subject takes a verb in -nt: *puella labōrat* → *puellae labōrant*; *videt* → *vident*.",
+   "unlocks": [
+    "V1.pres.3pl",
+    "V2.pres.3pl"
+   ],
+   "number": 5
+  },
+  {
+   "id": "accusative-plural",
+   "lesson": 6,
+   "title": "Plural objects: -ās",
+   "summary": "One object -am, several objects -ās: *portam* → *portās*. Adjectives agree: *multās fābulās*.",
+   "unlocks": [
+    "N1.*.acc.pl",
+    "A12.f.acc.pl"
+   ],
+   "number": 6
+  },
+  {
+   "id": "second-declension-masculine",
+   "lesson": 7,
+   "title": "Second declension: -us, -ī, -um, -ōs",
+   "summary": "Masculine nouns like *servus* (and *puer*, *vir*): subject *servus* / plural *servī*; object *servum* / plural *servōs*. Adjectives describing them use the same endings: *servus bonus*, *servōs bonōs*.",
+   "unlocks": [
+    "N2.m.nom.*",
+    "N2.m.acc.*",
+    "A12.m.nom.*",
+    "A12.m.acc.*"
+   ],
+   "number": 7
+  },
+  {
+   "id": "second-declension-neuter",
+   "lesson": 8,
+   "title": "Neuter nouns: -um, plural -a",
+   "summary": "Neuter nouns (*bellum*, *dōnum*) look the same as subject and object: *-um* in the singular, *-a* in the plural. Adjectives agree: *dōnum novum*, *dōna nova*.",
+   "unlocks": [
+    "N2.n.nom.*",
+    "N2.n.acc.*",
+    "A12.n.nom.*",
+    "A12.n.acc.*"
+   ],
+   "number": 8
+  },
+  {
+   "id": "questions",
+   "lesson": 9,
+   "title": "Questions: -ne, quis?, quid?, cūr?",
+   "summary": "Add *-ne* to the first word to make a yes/no question: *Estne puella laeta?* Question words: *quis?* 'who?', *quid?* 'what?', *quem?* 'whom?', *cūr?* 'why?', *ubi?* 'where?'.",
+   "unlocks": [
+    "CLITIC",
+    "P.quis.nom.*",
+    "P.quis.acc.*"
+   ],
+   "number": 9
+  },
+  {
+   "id": "verb-1sg-2sg",
+   "lesson": 10,
+   "title": "I and you: -ō / -s; sum, es",
+   "summary": "The ending tells you the person: *amō* 'I love', *amās* 'you love', *amat* 'he/she loves'; *sum* 'I am', *es* 'you are'. *ego* and *tū* are only added for emphasis.",
+   "unlocks": [
+    "V1.pres.1sg",
+    "V1.pres.2sg",
+    "V2.pres.1sg",
+    "V2.pres.2sg",
+    "Vsum.pres.1sg",
+    "Vsum.pres.2sg",
+    "P.ego.nom.sg",
+    "P.tu.nom.sg"
+   ],
+   "number": 10
+  },
+  {
+   "id": "verb-1pl-2pl",
+   "lesson": 11,
+   "title": "We and you all: -mus / -tis; sumus, estis",
+   "summary": "*amāmus* 'we love', *amātis* 'you (all) love'; *sumus* 'we are', *estis* 'you are'. Now you know the whole present tense.",
+   "unlocks": [
+    "V1.pres.1pl",
+    "V1.pres.2pl",
+    "V2.pres.1pl",
+    "V2.pres.2pl",
+    "Vsum.pres.1pl",
+    "Vsum.pres.2pl",
+    "P.nos.nom.pl",
+    "P.vos.nom.pl"
+   ],
+   "number": 11
+  },
+  {
+   "id": "imperative-vocative",
+   "lesson": 12,
+   "title": "Commands and calling someone",
+   "summary": "Command one person with the bare stem: *amā!*, *vidē!*; several people add -te: *amāte!*, *vidēte!*. When you call someone by name, -us becomes -e: *Mārce!*, *serve!*; other words don't change.",
+   "unlocks": [
+    "V1.imp.*",
+    "V2.imp.*",
+    "Vsum.imp.*",
+    "N1.*.voc.*",
+    "N2.*.voc.*",
+    "A12.*.voc.*"
+   ],
+   "number": 12
+  },
+  {
+   "id": "infinitive",
+   "lesson": 13,
+   "title": "The infinitive: to do (-āre, -ēre); possum",
+   "summary": "The infinitive is the 'to …' form: *amāre* 'to love', *vidēre* 'to see', *esse* 'to be'. It goes with verbs like *possum* 'I can' (*potest*, *possunt* …), *dēbeō* 'I must', *iubeō* 'I order'.",
+   "unlocks": [
+    "V1.inf",
+    "V2.inf",
+    "Vsum.inf",
+    "Vposs.pres.*",
+    "Vposs.inf"
+   ],
+   "number": 13
+  },
+  {
+   "id": "prepositions-accusative",
+   "lesson": 14,
+   "title": "Where to? ad, in, per, inter + accusative",
+   "summary": "Prepositions of motion take the accusative: *ad silvam* 'to the forest', *in silvam* 'into the forest', *per viās* 'through the streets', *inter puellās* 'among the girls'.",
+   "unlocks": [],
+   "number": 14
+  },
+  {
+   "id": "ablative",
+   "lesson": 15,
+   "title": "The ablative: with, from, in",
+   "summary": "A new case for 'with / by / from / in': 1st declension *-ā / -īs*, 2nd *-ō / -īs*. *in silvā* 'in the forest', *cum amīcō* 'with a friend', *ex oppidō* 'out of the town', *sine aquā* 'without water'.",
+   "unlocks": [
+    "N1.*.abl.*",
+    "N2.*.abl.*",
+    "A12.*.abl.*"
+   ],
+   "number": 15
+  },
+  {
+   "id": "genitive",
+   "lesson": 16,
+   "title": "The genitive: of (-ae, -ī)",
+   "summary": "'Of': *puellae* 'of the girl', *puellārum* 'of the girls', *servī* 'of the slave', *servōrum* 'of the slaves'. It usually follows its noun: *via silvae* 'the path of the forest'.",
+   "unlocks": [
+    "N1.*.gen.*",
+    "N2.*.gen.*",
+    "A12.*.gen.*"
+   ],
+   "number": 16
+  },
+  {
+   "id": "dative",
+   "lesson": 17,
+   "title": "The dative: to / for (-ae, -ō, -īs)",
+   "summary": "The indirect object – to whom something is given or told: *puellae dōnum dat* 'he gives a gift to the girl'; *servō*, *servīs*. Verbs like *placeō*, *noceō*, *pāreō* take the dative.",
+   "unlocks": [
+    "N1.*.dat.*",
+    "N2.*.dat.*",
+    "A12.*.dat.*"
+   ],
+   "number": 17
+  },
+  {
+   "id": "third-declension-nom-acc",
+   "lesson": 19,
+   "title": "Third declension: rēx, rēgem, rēgēs",
+   "summary": "A big new noun family. The dictionary gives two forms: *rēx, rēgis* – the stem is in the second (*rēg-*). Object *rēgem*; plural subject and object *rēgēs*.",
+   "unlocks": [
+    "N3.m.nom.*",
+    "N3.f.nom.*",
+    "N3.m.acc.*",
+    "N3.f.acc.*",
+    "N3.m.voc.*",
+    "N3.f.voc.*"
+   ],
+   "number": 18
+  },
+  {
+   "id": "third-declension-cases",
+   "lesson": 20,
+   "title": "Third declension: the other cases",
+   "summary": "*rēgis* 'of the king', *rēgī* 'to the king', *rēge* 'by/with the king'; plural *rēgum*, *rēgibus*. Some nouns (*urbs*, *mors*) have -ium in the genitive plural.",
+   "unlocks": [
+    "N3.m.*",
+    "N3.f.*"
+   ],
+   "number": 19
+  },
+  {
+   "id": "third-declension-neuter",
+   "lesson": 21,
+   "title": "Third declension neuters: corpus, nōmen",
+   "summary": "Neuters again have subject = object, plural in -a: *corpus* → *corpora*, *nōmen* → *nōmina*.",
+   "unlocks": [
+    "N3.n.*"
+   ],
+   "number": 20
+  },
+  {
+   "id": "third-conjugation",
+   "lesson": 22,
+   "title": "Third conjugation: dīcō, dīcit, dīcunt",
+   "summary": "Verbs with infinitive -ere (short e): *dīcō, dīcis, dīcit, dīcimus, dīcitis, dīcunt*; command *dīc!* / *dūc!*, others *mitte!*; infinitive *dīcere*.",
+   "unlocks": [
+    "V3.pres.*",
+    "V3.imp.*",
+    "V3.inf"
+   ],
+   "number": 21
+  },
+  {
+   "id": "third-io-fourth-conjugation",
+   "lesson": 23,
+   "title": "faciō and audiō: -iunt",
+   "summary": "*faciō, facis, facit … faciunt* (3rd -iō) and *audiō, audīs, audit … audiunt* (4th). Infinitives *facere*, *audīre*.",
+   "unlocks": [
+    "V3io.pres.*",
+    "V3io.imp.*",
+    "V3io.inf",
+    "V4.pres.*",
+    "V4.imp.*",
+    "V4.inf"
+   ],
+   "number": 22
+  },
+  {
+   "id": "imperfect",
+   "lesson": 25,
+   "title": "The imperfect: was doing, used to do (-bam)",
+   "summary": "Past ongoing action: *amābam* 'I was loving', *vidēbat* 'he was seeing', *dīcēbant* 'they used to say'; *eram* 'I was', *poteram* 'I could'.",
+   "unlocks": [
+    "V*.impf.*"
+   ],
+   "number": 23
+  },
+  {
+   "id": "future-1-2",
+   "lesson": 26,
+   "title": "The future (1st & 2nd conj.): -bō, -bis, -bit",
+   "summary": "*amābō* 'I will love', *vidēbit* 'he will see'; *erō, eris, erit* 'I will be'; *poterō* 'I will be able'.",
+   "unlocks": [
+    "V1.fut.*",
+    "V2.fut.*",
+    "Vsum.fut.*",
+    "Vposs.fut.*"
+   ],
+   "number": 24
+  },
+  {
+   "id": "future-3-4",
+   "lesson": 27,
+   "title": "The future (3rd & 4th conj.): -am, -ēs, -et",
+   "summary": "*dīcam* 'I will say', *dīcēs*, *dīcet* …; *audiam*, *audiet*; *faciam*, *faciet*. Careful: *dīcet* (will say) vs *dīcit* (says).",
+   "unlocks": [
+    "V3.fut.*",
+    "V3io.fut.*",
+    "V4.fut.*"
+   ],
+   "number": 25
+  },
+  {
+   "id": "perfect",
+   "lesson": 28,
+   "title": "The perfect: did, have done",
+   "summary": "The third dictionary form gives the perfect stem: *amāvī* 'I loved', *vīdit* 'he saw', *dīxērunt* 'they said', *fuit* 'was'. Endings -ī, -istī, -it, -imus, -istis, -ērunt.",
+   "unlocks": [
+    "V*.perf.*"
+   ],
+   "number": 26
+  },
+  {
+   "id": "personal-pronouns",
+   "lesson": 29,
+   "title": "Me, to me, with me: ego, tū, nōs, vōs",
+   "summary": "*mē* 'me', *mihi* 'to me', *tē*, *tibi*, *nōs*, *nōbīs*, *vōs*, *vōbīs*; *mēcum* 'with me'.",
+   "unlocks": [
+    "P.ego.*",
+    "P.tu.*",
+    "P.nos.*",
+    "P.vos.*"
+   ],
+   "number": 27
+  },
+  {
+   "id": "is-ea-id",
+   "lesson": 30,
+   "title": "is, ea, id: he, she, it, that",
+   "summary": "*is* 'he', *ea* 'she', *id* 'it'; *eum*, *eam* 'him, her'; *eius* 'his/her'; *eī* 'to him'; plural *eī, eae, ea*, *eōs, eās*.",
+   "unlocks": [
+    "P.is.*"
+   ],
+   "number": 28
+  }
+ ],
+ "lessons": [
+  {
+   "number": 1,
+   "title": "Est: your first Latin sentences",
+   "newLemmas": [
+    "sum",
+    "et",
+    "non",
+    "puella",
+    "femina",
+    "bonus",
+    "magnus"
+   ],
+   "rule": "est-sentences",
+   "focus": "Describing people: X est Y."
+  },
+  {
+   "number": 2,
+   "title": "More than one: -ae and sunt",
+   "newLemmas": [
+    "sed",
+    "terra",
+    "via",
+    "aqua",
+    "longus",
+    "parvus"
+   ],
+   "rule": "nominative-plural",
+   "focus": "Places and things; contrast with sed."
+  },
+  {
+   "number": 3,
+   "title": "Verbs: someone does something",
+   "newLemmas": [
+    "sto",
+    "laboro",
+    "timeo",
+    "maneo",
+    "rideo",
+    "nunc",
+    "saepe"
+   ],
+   "rule": "verb-3sg",
+   "focus": "Intransitive verbs, he/she/it."
+  },
+  {
+   "number": 4,
+   "title": "The object: -am",
+   "newLemmas": [
+    "amo",
+    "video",
+    "habeo",
+    "voco",
+    "laudo",
+    "silva"
+   ],
+   "rule": "accusative-singular",
+   "focus": "Transitive verbs + object."
+  },
+  {
+   "number": 5,
+   "title": "They do: -nt",
+   "newLemmas": [
+    "multus",
+    "paro",
+    "porto",
+    "specto",
+    "quoque",
+    "ubi"
+   ],
+   "rule": "verb-3pl",
+   "focus": "Plural subjects + verbs."
+  },
+  {
+   "number": 6,
+   "title": "Many objects: -ās",
+   "newLemmas": [
+    "porta",
+    "insula",
+    "fabula",
+    "narro",
+    "semper",
+    "numquam"
+   ],
+   "rule": "accusative-plural",
+   "focus": "Stories and places."
+  },
+  {
+   "number": 7,
+   "title": "Boys and men: second declension",
+   "newLemmas": [
+    "puer",
+    "vir",
+    "servus",
+    "dominus",
+    "equus",
+    "amicus"
+   ],
+   "rule": "second-declension-masculine",
+   "focus": "The household."
+  },
+  {
+   "number": 8,
+   "title": "Neuter nouns: gifts, words, war",
+   "newLemmas": [
+    "bellum",
+    "donum",
+    "verbum",
+    "oppidum",
+    "caelum",
+    "novus",
+    "do"
+   ],
+   "rule": "second-declension-neuter",
+   "focus": "Giving and receiving."
+  },
+  {
+   "number": 9,
+   "title": "Asking questions",
+   "newLemmas": [
+    "-ne",
+    "quis",
+    "cur",
+    "malus",
+    "laetus",
+    "iam"
+   ],
+   "rule": "questions",
+   "focus": "Dialogues."
+  },
+  {
+   "number": 10,
+   "title": "I and you",
+   "newLemmas": [
+    "ego",
+    "tu",
+    "meus",
+    "tuus",
+    "bene",
+    "rogo"
+   ],
+   "rule": "verb-1sg-2sg",
+   "focus": "Conversation in the first person."
+  },
+  {
+   "number": 11,
+   "title": "We and you all",
+   "newLemmas": [
+    "nos",
+    "vos",
+    "noster",
+    "vester",
+    "exspecto",
+    "propero"
+   ],
+   "rule": "verb-1pl-2pl",
+   "focus": "Groups and families."
+  },
+  {
+   "number": 12,
+   "title": "Commands and greetings",
+   "newLemmas": [
+    "valeo",
+    "taceo",
+    "doceo",
+    "moneo",
+    "respondeo",
+    "ita"
+   ],
+   "rule": "imperative-vocative",
+   "focus": "The classroom: valē!, tacē!"
+  },
+  {
+   "number": 13,
+   "title": "Can, must, dare: the infinitive",
+   "newLemmas": [
+    "possum",
+    "debeo",
+    "iubeo",
+    "audeo",
+    "dubito",
+    "cogito"
+   ],
+   "rule": "infinitive",
+   "focus": "Wishes and duties."
+  },
+  {
+   "number": 14,
+   "title": "Going places: ad, in, per",
+   "newLemmas": [
+    "in",
+    "ad",
+    "per",
+    "inter",
+    "intro",
+    "erro"
+   ],
+   "rule": "prepositions-accusative",
+   "focus": "Journeys."
+  },
+  {
+   "number": 15,
+   "title": "With, from, without: the ablative",
+   "newLemmas": [
+    "cum",
+    "ex",
+    "ab",
+    "de",
+    "sine",
+    "ager"
+   ],
+   "rule": "ablative",
+   "focus": "Countryside and farm."
+  },
+  {
+   "number": 16,
+   "title": "Of: the genitive",
+   "newLemmas": [
+    "filia",
+    "familia",
+    "regnum",
+    "deus",
+    "populus",
+    "natura"
+   ],
+   "rule": "genitive",
+   "focus": "Families, gods and peoples."
+  },
+  {
+   "number": 17,
+   "title": "To and for: the dative",
+   "newLemmas": [
+    "placeo",
+    "noceo",
+    "pareo",
+    "gratus",
+    "carus",
+    "amicitia"
+   ],
+   "rule": "dative",
+   "focus": "Friendship and gifts."
+  },
+  {
+   "number": 18,
+   "title": "Review: life and feelings",
+   "newLemmas": [
+    "vita",
+    "cura",
+    "ira",
+    "poena",
+    "lacrima",
+    "altus"
+   ],
+   "rule": null,
+   "focus": "Consolidation – no new grammar; longer reading."
+  },
+  {
+   "number": 19,
+   "title": "Kings and fathers: third declension",
+   "newLemmas": [
+    "rex",
+    "pater",
+    "mater",
+    "homo",
+    "frater",
+    "urbs"
+   ],
+   "rule": "third-declension-nom-acc",
+   "focus": "Family and city."
+  },
+  {
+   "number": 20,
+   "title": "Third declension: all cases",
+   "newLemmas": [
+    "miles",
+    "dux",
+    "lex",
+    "vox",
+    "lux",
+    "mors"
+   ],
+   "rule": "third-declension-cases",
+   "focus": "Soldiers and laws."
+  },
+  {
+   "number": 21,
+   "title": "Body, time and name",
+   "newLemmas": [
+    "corpus",
+    "tempus",
+    "nomen",
+    "caput",
+    "carmen",
+    "flumen"
+   ],
+   "rule": "third-declension-neuter",
+   "focus": "Neuter nouns."
+  },
+  {
+   "number": 22,
+   "title": "Saying and leading: third conjugation",
+   "newLemmas": [
+    "dico",
+    "ago",
+    "peto",
+    "mitto",
+    "duco",
+    "scribo",
+    "lego"
+   ],
+   "rule": "third-conjugation",
+   "focus": "Letters and messages."
+  },
+  {
+   "number": 23,
+   "title": "Doing and hearing: faciō, audiō",
+   "newLemmas": [
+    "facio",
+    "capio",
+    "venio",
+    "audio",
+    "scio",
+    "fugio",
+    "dormio"
+   ],
+   "rule": "third-io-fourth-conjugation",
+   "focus": "Everyday actions."
+  },
+  {
+   "number": 24,
+   "title": "Review: believing and living",
+   "newLemmas": [
+    "credo",
+    "vivo",
+    "quaero",
+    "curro",
+    "vinco",
+    "relinquo"
+   ],
+   "rule": null,
+   "focus": "Consolidation – no new grammar; longer reading."
+  },
+  {
+   "number": 25,
+   "title": "Once upon a time: the imperfect",
+   "newLemmas": [
+    "tum",
+    "diu",
+    "deinde",
+    "olim",
+    "annus",
+    "iaceo"
+   ],
+   "rule": "imperfect",
+   "focus": "Telling stories in the past."
+  },
+  {
+   "number": 26,
+   "title": "Tomorrow: the future (-bō)",
+   "newLemmas": [
+    "spero",
+    "mox",
+    "postea",
+    "tandem",
+    "servo",
+    "muto"
+   ],
+   "rule": "future-1-2",
+   "focus": "Plans and hopes."
+  },
+  {
+   "number": 27,
+   "title": "The future of dīcō and audiō",
+   "newLemmas": [
+    "invenio",
+    "sentio",
+    "pono",
+    "cado",
+    "cognosco",
+    "accipio"
+   ],
+   "rule": "future-3-4",
+   "focus": "Predictions."
+  },
+  {
+   "number": 28,
+   "title": "Done and dusted: the perfect",
+   "newLemmas": [
+    "post",
+    "ante",
+    "fortuna",
+    "fama",
+    "gloria",
+    "victoria"
+   ],
+   "rule": "perfect",
+   "focus": "Famous deeds."
+  },
+  {
+   "number": 29,
+   "title": "Me and you: pronoun cases",
+   "newLemmas": [
+    "amor",
+    "dolor",
+    "timor",
+    "gaudeo",
+    "fleo",
+    "cupio"
+   ],
+   "rule": "personal-pronouns",
+   "focus": "Feelings."
+  },
+  {
+   "number": 30,
+   "title": "He, she, it: is, ea, id",
+   "newLemmas": [
+    "is",
+    "nihil",
+    "ibi",
+    "statim",
+    "hodie",
+    "ecce"
+   ],
+   "rule": "is-ea-id",
+   "focus": "Pointing and referring back."
+  }
+ ],
+ "outline": [
+  {
+   "lessons": "31–36",
+   "rules": [
+    "hic-ille (this / that)",
+    "relative pronoun quī quae quod",
+    "third-declension adjectives (omnis, fortis, ingēns)",
+    "fourth declension (manus, domus)",
+    "fifth declension (rēs, diēs)",
+    "review"
+   ],
+   "vocabulary": "next ~35 DCC lemmas by rank: hic, ille, quī, omnis, ipse, idem, manus, domus, rēs, diēs, fortis, gravis, ingēns …"
+  },
+  {
+   "lessons": "37–42",
+   "rules": [
+    "eō, īre (go) and compounds",
+    "volō / nōlō",
+    "ferō",
+    "pluperfect and future perfect",
+    "numerals 1–10",
+    "review"
+   ],
+   "vocabulary": "eō, redeō, exeō, volō, nōlō, ferō, ūnus, duo, trēs …"
+  },
+  {
+   "lessons": "43–50",
+   "rules": [
+    "passive voice: present system",
+    "passive: perfect system & perfect participle",
+    "deponent verbs (sequor, loquor)",
+    "comparative adjectives",
+    "superlatives and adverbs",
+    "present participle",
+    "ablative absolute",
+    "review"
+   ],
+   "vocabulary": "sequor, loquor, patior, morior, nāscor, ūtor, gravis, levis, facilis …"
+  },
+  {
+   "lessons": "51–60",
+   "rules": [
+    "infinitives (all tenses)",
+    "indirect statement",
+    "present subjunctive",
+    "imperfect subjunctive",
+    "purpose clauses (ut / nē)",
+    "result clauses",
+    "cum clauses",
+    "indirect questions",
+    "conditionals",
+    "gerund and gerundive"
+   ],
+   "vocabulary": "continue down the DCC list (~6 lemmas a lesson), prioritising verbs and nouns of high rank"
+  },
+  {
+   "lessons": "61+",
+   "rules": [
+    "reading lessons: adapted Caesar, Ovid, Catullus, the Vulgate; one new lemma batch per lesson"
+   ],
+   "vocabulary": "the remainder of the 997-lemma DCC core, in rank order, until the whole core is taught (~lesson 160)"
+  }
+ ]
+}

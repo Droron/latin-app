@@ -1,0 +1,374 @@
+{
+ "schemaVersion": 2,
+ "number": 1,
+ "id": "L001",
+ "curriculum": "dcc-core-v1",
+ "written": "2026-10-19",
+ "title": "Est: your first Latin sentences",
+ "subtitle": "Lesson 1 · Sentences with est – no articles",
+ "rule": "est-sentences",
+ "intro": "Welcome to Latin! Today's seven words are among the most common in the language (*et* 'and' is the single most frequent Latin word, *est* 'is' the second). With them you can already make real sentences like *Puella est bona* – 'The girl is good.'",
+ "names": [
+  {
+   "id": "iulia",
+   "la": "Iūlia",
+   "en": "Julia (a girl's name)"
+  },
+  {
+   "id": "cornelia",
+   "la": "Cornēlia",
+   "en": "Cornelia (a woman's name)"
+  },
+  {
+   "id": "roma",
+   "la": "Rōma",
+   "en": "Rome"
+  }
+ ],
+ "vocab": [
+  {
+   "id": "sum",
+   "la": "sum",
+   "dict": "sum esse fuī futūrum",
+   "en": "to be (est = is)",
+   "rank": 2,
+   "pos": "verb",
+   "notes": "Today you only need *est* 'is' (and *nōn est* 'is not'). The other forms of this verb come in later lessons.",
+   "example": {
+    "la": "Puella est bona.",
+    "en": "The girl is good."
+   },
+   "accept": [
+    "be",
+    "is",
+    "am"
+   ],
+   "pron": "SOOM · est = EST"
+  },
+  {
+   "id": "et",
+   "la": "et",
+   "dict": "et",
+   "en": "and",
+   "rank": 1,
+   "pos": "conjunction",
+   "example": {
+    "la": "Rōma est magna et bona.",
+    "en": "Rome is great and good."
+   },
+   "pron": "ET"
+  },
+  {
+   "id": "non",
+   "la": "nōn",
+   "dict": "nōn",
+   "en": "not",
+   "rank": 6,
+   "pos": "adverb",
+   "notes": "Put it right before the word it negates: *nōn est* 'is not'.",
+   "example": {
+    "la": "Puella nōn est magna.",
+    "en": "The girl is not big."
+   },
+   "pron": "NOHN"
+  },
+  {
+   "id": "puella",
+   "la": "puella",
+   "dict": "puella -ae f.",
+   "en": "girl",
+   "rank": 233,
+   "pos": "noun",
+   "decl": 1,
+   "gender": "f",
+   "example": {
+    "la": "Iūlia est puella.",
+    "en": "Julia is a girl."
+   },
+   "pron": "pu-EL-la"
+  },
+  {
+   "id": "femina",
+   "la": "fēmina",
+   "dict": "fēmina -ae f.",
+   "en": "woman",
+   "rank": 501,
+   "pos": "noun",
+   "decl": 1,
+   "gender": "f",
+   "example": {
+    "la": "Cornēlia est fēmina.",
+    "en": "Cornelia is a woman."
+   },
+   "pron": "FAY-mi-na"
+  },
+  {
+   "id": "bonus",
+   "la": "bonus",
+   "dict": "bonus, bona, bonum",
+   "en": "good",
+   "rank": 68,
+   "pos": "adjective",
+   "decl": "1st/2nd",
+   "notes": "Describing a feminine noun such as *puella* it ends in -a: *bona*.",
+   "example": {
+    "la": "Fēmina est bona.",
+    "en": "The woman is good."
+   },
+   "pron": "BO-nus · bona = BO-na"
+  },
+  {
+   "id": "magnus",
+   "la": "magnus",
+   "dict": "magnus, magna, magnum",
+   "en": "big, great, tall",
+   "rank": 25,
+   "pos": "adjective",
+   "decl": "1st/2nd",
+   "notes": "With feminine nouns: *magna*. Of a person it means 'tall' or 'great'.",
+   "example": {
+    "la": "Rōma est magna.",
+    "en": "Rome is great."
+   },
+   "accept": [
+    "big",
+    "great",
+    "tall",
+    "large"
+   ],
+   "pron": "MAG-nus · magna = MAG-na"
+  }
+ ],
+ "grammar": [
+  {
+   "title": "est – and no 'the'",
+   "rules": [
+    "est-sentences"
+   ],
+   "body": "*est* means 'is': *Puella est bona* = 'The girl is good.'\n\nLatin has **no words for 'the' or 'a'**. *puella* can mean 'girl', 'the girl' or 'a girl' – choose whatever sounds natural in English.\n\nAn adjective that describes a feminine noun like *puella* or *fēmina* also ends in **-a**: *puella bona* 'a good girl', *fēmina magna* 'a tall woman'.\n\nWord order is flexible and the verb likes to come last: *Puella bona est* and *Puella est bona* both mean 'The girl is good.'\n\n*nōn* 'not' goes right before the word it negates: *Puella nōn est magna* 'The girl is not big.'",
+   "table": {
+    "head": [
+     "Latin",
+     "English"
+    ],
+    "laCols": [
+     0
+    ],
+    "rows": [
+     [
+      "puella",
+      "girl · the girl · a girl"
+     ],
+     [
+      "est",
+      "is"
+     ],
+     [
+      "nōn est",
+      "is not"
+     ],
+     [
+      "puella bona",
+      "a good girl"
+     ],
+     [
+      "Puella bona est.",
+      "The girl is good."
+     ]
+    ]
+   }
+  },
+  {
+   "title": "Saying it out loud",
+   "rules": [],
+   "body": "Classical Latin is pronounced the way it is spelled. **c** is always hard (k), **v** sounds like English w, every vowel is pronounced, and a line over a vowel (ā, ē, ō) just means it is long: *fēmina* = FAY-mi-na, *nōn* = NOHN. *puella* is stressed pu-EL-la: the double l makes that syllable heavy, so it takes the stress."
+  }
+ ],
+ "examples": [
+  {
+   "la": "Puella est bona.",
+   "en": "The girl is good.",
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "la": "Fēmina est magna.",
+   "en": "The woman is tall.",
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "la": "Iūlia nōn est fēmina; Iūlia est puella.",
+   "en": "Julia is not a woman; Julia is a girl.",
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "la": "Cornēlia est fēmina bona.",
+   "en": "Cornelia is a good woman.",
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "la": "Puella bona et magna est.",
+   "en": "The girl is good and tall.",
+   "rules": [
+    "est-sentences"
+   ]
+  }
+ ],
+ "exercises": [
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The girl is good.",
+   "answer": "Puella est bona.",
+   "choices": [
+    "Puella est bona.",
+    "Fēmina est bona.",
+    "Puella nōn est bona."
+   ],
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Fēmina nōn est magna.",
+   "answerLang": "en",
+   "answer": "The woman is not tall.",
+   "accept": [
+    "The woman is not big.",
+    "The woman is not great.",
+    "A woman is not tall.",
+    "The woman isn't tall.",
+    "The woman isn't big.",
+    "Woman is not tall"
+   ],
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Julia is a girl.",
+   "answer": "Iūlia est puella.",
+   "accept": [
+    "Iūlia puella est.",
+    "Puella est Iūlia."
+   ],
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "Which word means 'not'?",
+   "answer": "nōn",
+   "choices": [
+    "nōn",
+    "et",
+    "est"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "What does *puella* mean?",
+   "la": "puella",
+   "answerLang": "en",
+   "answer": "girl",
+   "choices": [
+    "girl",
+    "woman",
+    "good"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Rome is great.",
+   "answer": "Rōma est magna.",
+   "accept": [
+    "Rōma magna est."
+   ],
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Cornēlia est fēmina bona.",
+   "answerLang": "en",
+   "answer": "Cornelia is a good woman.",
+   "accept": [
+    "Cornelia is a good woman"
+   ],
+   "rules": [
+    "est-sentences"
+   ]
+  }
+ ],
+ "drills": [
+  {
+   "sentence": "Puella ___ bona.",
+   "answer": "est",
+   "choices": [
+    "est",
+    "et",
+    "nōn"
+   ],
+   "en": "The girl is good.",
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "sentence": "Puella est ___.",
+   "answer": "bona",
+   "choices": [
+    "bona",
+    "fēmina",
+    "et"
+   ],
+   "en": "The girl is good.",
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "sentence": "Iūlia ___ est fēmina.",
+   "answer": "nōn",
+   "choices": [
+    "nōn",
+    "et"
+   ],
+   "en": "Julia is not a woman.",
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "sentence": "Rōma est ___ et bona.",
+   "answer": "magna",
+   "choices": [
+    "magna",
+    "fēmina",
+    "nōn"
+   ],
+   "en": "Rome is great and good."
+  }
+ ],
+ "reading": {
+  "title": "Iūlia et Cornēlia",
+  "la": "Iūlia est puella. Iūlia est puella bona. Cornēlia nōn est puella; Cornēlia est fēmina. Fēmina magna et bona est. Rōma est magna.",
+  "en": "Julia is a girl. Julia is a good girl. Cornelia is not a girl; Cornelia is a woman. The woman is tall and good. Rome is great.",
+  "hint": "Every word here is from today's list (plus the names Julia, Cornelia and Rome)."
+ },
+ "notes": [
+  "Frequency: *et* is #1, 'to be' (dictionary form sum) #2 and *nōn* #6 in the DCC core list of the 1,000 most common Latin words."
+ ]
+}

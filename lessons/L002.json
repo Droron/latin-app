@@ -1,0 +1,353 @@
+{
+ "schemaVersion": 2,
+ "number": 2,
+ "id": "L002",
+ "curriculum": "dcc-core-v1",
+ "written": "2026-10-19",
+ "title": "More than one: -ae and sunt",
+ "subtitle": "Lesson 2 · Plural subjects",
+ "rule": "nominative-plural",
+ "intro": "Lesson 1 gave you *est* 'is'. Today: what happens when there is more than one – *puellae sunt bonae* 'the girls are good' – plus *sed* 'but' and five words for the world around you.",
+ "names": [
+  {
+   "id": "italia",
+   "la": "Italia",
+   "en": "Italy"
+  },
+  {
+   "id": "britannia",
+   "la": "Britannia",
+   "en": "Britain"
+  }
+ ],
+ "vocab": [
+  {
+   "id": "sed",
+   "la": "sed",
+   "dict": "sed",
+   "en": "but",
+   "rank": 20,
+   "pos": "conjunction",
+   "example": {
+    "la": "Terra magna est, sed via parva est.",
+    "en": "The land is big, but the road is small."
+   },
+   "pron": "SED"
+  },
+  {
+   "id": "terra",
+   "la": "terra",
+   "dict": "terra -ae f.",
+   "en": "land, earth",
+   "rank": 70,
+   "pos": "noun",
+   "decl": 1,
+   "gender": "f",
+   "example": {
+    "la": "Italia est terra magna.",
+    "en": "Italy is a big land."
+   },
+   "accept": [
+    "land",
+    "earth",
+    "ground"
+   ],
+   "pron": "TER-ra"
+  },
+  {
+   "id": "via",
+   "la": "via",
+   "dict": "via -ae f.",
+   "en": "road, street, way",
+   "rank": 196,
+   "pos": "noun",
+   "decl": 1,
+   "gender": "f",
+   "example": {
+    "la": "Via longa est.",
+    "en": "The road is long."
+   },
+   "accept": [
+    "road",
+    "street",
+    "way"
+   ],
+   "pron": "WI-a"
+  },
+  {
+   "id": "aqua",
+   "la": "aqua",
+   "dict": "aqua -ae f.",
+   "en": "water",
+   "rank": 272,
+   "pos": "noun",
+   "decl": 1,
+   "gender": "f",
+   "example": {
+    "la": "Aqua bona est.",
+    "en": "The water is good."
+   },
+   "pron": "A-kwa"
+  },
+  {
+   "id": "longus",
+   "la": "longus",
+   "dict": "longus, longa, longum",
+   "en": "long",
+   "rank": 142,
+   "pos": "adjective",
+   "decl": "1st/2nd",
+   "notes": "Feminine *longa*, plural *longae*.",
+   "example": {
+    "la": "Viae longae sunt.",
+    "en": "The roads are long."
+   },
+   "pron": "LON-gus"
+  },
+  {
+   "id": "parvus",
+   "la": "parvus",
+   "dict": "parvus, parva, parvum",
+   "en": "small, little",
+   "rank": 143,
+   "pos": "adjective",
+   "decl": "1st/2nd",
+   "notes": "Feminine *parva*, plural *parvae*.",
+   "example": {
+    "la": "Puella parva est.",
+    "en": "The girl is small."
+   },
+   "accept": [
+    "small",
+    "little"
+   ],
+   "pron": "PAR-wus"
+  }
+ ],
+ "grammar": [
+  {
+   "title": "Plural: -a becomes -ae, est becomes sunt",
+   "rules": [
+    "nominative-plural"
+   ],
+   "body": "One girl is *puella*; two or more are *puellae*. When the subject is plural, *est* 'is' becomes *sunt* 'are'.\n\nAdjectives follow their noun into the plural too: *puella bona* → *puellae bonae*. So *Puellae sunt bonae* = 'The girls are good.'\n\nTwo singular subjects joined by *et* are also plural: *Iūlia et Cornēlia sunt bonae* 'Julia and Cornelia are good.'\n\n*sed* 'but' joins two statements: *Terra magna est, sed via parva est.*",
+   "table": {
+    "head": [
+     "one",
+     "more than one"
+    ],
+    "laCols": [
+     0,
+     1
+    ],
+    "rows": [
+     [
+      "puella",
+      "puellae"
+     ],
+     [
+      "via longa",
+      "viae longae"
+     ],
+     [
+      "est",
+      "sunt"
+     ],
+     [
+      "Via longa est.",
+      "Viae longae sunt."
+     ]
+    ]
+   }
+  }
+ ],
+ "examples": [
+  {
+   "la": "Puellae sunt bonae.",
+   "en": "The girls are good.",
+   "rules": [
+    "nominative-plural"
+   ]
+  },
+  {
+   "la": "Viae longae sunt.",
+   "en": "The roads are long.",
+   "rules": [
+    "nominative-plural"
+   ]
+  },
+  {
+   "la": "Fēminae nōn sunt parvae.",
+   "en": "The women are not small.",
+   "rules": [
+    "nominative-plural"
+   ]
+  },
+  {
+   "la": "Iūlia et Cornēlia sunt bonae.",
+   "en": "Julia and Cornelia are good.",
+   "rules": [
+    "nominative-plural"
+   ]
+  },
+  {
+   "la": "Italia magna est, sed Britannia nōn est parva.",
+   "en": "Italy is big, but Britain is not small.",
+   "rules": [
+    "est-sentences"
+   ]
+  }
+ ],
+ "exercises": [
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The roads are long.",
+   "answer": "Viae longae sunt.",
+   "choices": [
+    "Viae longae sunt.",
+    "Via longa est.",
+    "Viae longa sunt."
+   ],
+   "rules": [
+    "nominative-plural"
+   ],
+   "explanation": "Plural subject *viae*, plural adjective *longae*, plural verb *sunt*."
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Puellae nōn sunt parvae.",
+   "answerLang": "en",
+   "answer": "The girls are not small.",
+   "accept": [
+    "Girls are not small.",
+    "The girls aren't small.",
+    "The girls are not little."
+   ],
+   "rules": [
+    "nominative-plural"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: The women are good.",
+   "answer": "Fēminae sunt bonae.",
+   "accept": [
+    "Fēminae bonae sunt."
+   ],
+   "rules": [
+    "nominative-plural"
+   ],
+   "review": true
+  },
+  {
+   "type": "choose",
+   "prompt": "What does *fēmina* mean?",
+   "la": "fēmina",
+   "answerLang": "en",
+   "answer": "woman",
+   "choices": [
+    "woman",
+    "girl",
+    "road"
+   ],
+   "review": true
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Julia is not a woman.",
+   "answer": "Iūlia nōn est fēmina.",
+   "accept": [
+    "Iūlia fēmina nōn est."
+   ],
+   "rules": [
+    "est-sentences"
+   ],
+   "review": true
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: The land is big, but the road is small.",
+   "answer": "Terra magna est, sed via parva est.",
+   "accept": [
+    "Terra est magna, sed via est parva.",
+    "Terra magna est sed via parva est."
+   ],
+   "rules": [
+    "est-sentences"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "Which word goes with *viae*?",
+   "answer": "longae",
+   "choices": [
+    "longae",
+    "longa"
+   ],
+   "rules": [
+    "nominative-plural"
+   ]
+  }
+ ],
+ "drills": [
+  {
+   "sentence": "Viae ___ longae.",
+   "answer": "sunt",
+   "choices": [
+    "sunt",
+    "est"
+   ],
+   "en": "The roads are long.",
+   "rules": [
+    "nominative-plural"
+   ]
+  },
+  {
+   "sentence": "Puellae sunt ___.",
+   "answer": "parvae",
+   "choices": [
+    "parvae",
+    "parva"
+   ],
+   "en": "The girls are small.",
+   "rules": [
+    "nominative-plural"
+   ]
+  },
+  {
+   "sentence": "Fēmina ___ bona.",
+   "answer": "est",
+   "choices": [
+    "est",
+    "sunt"
+   ],
+   "en": "The woman is good.",
+   "rules": [
+    "est-sentences"
+   ],
+   "review": true
+  },
+  {
+   "sentence": "Cornēlia est fēmina ___.",
+   "answer": "magna",
+   "choices": [
+    "magna",
+    "magnae"
+   ],
+   "en": "Cornelia is a tall woman.",
+   "rules": [
+    "est-sentences"
+   ],
+   "review": true
+  }
+ ],
+ "reading": {
+  "title": "Terra et viae",
+  "la": "Italia terra magna est. Viae longae sunt, sed viae bonae sunt. Aqua bona est. Iūlia puella parva est, sed Cornēlia fēmina magna est. Puella et fēmina sunt bonae.",
+  "en": "Italy is a big land. The roads are long, but the roads are good. The water is good. Julia is a small girl, but Cornelia is a tall woman. The girl and the woman are good."
+ },
+ "notes": [
+  "*-ae* will later turn out to have other jobs too; for now it simply means 'more than one'."
+ ]
+}
