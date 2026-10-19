@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+"""Plan the next lesson from data/curriculum.json and write a draft skeleton for the author to fill in.
+
+Usage:
+  scripts/generate_lesson            # next lesson after the highest lessons/L###.json
+  scripts/generate_lesson 7          # a specific lesson number
+  scripts/generate_lesson --print    # only print the plan, write nothing
+  scripts/generate_lesson --force    # overwrite an existing draft
+
+Writes
+  drafts/L###.plan.json   the plan: new lemmas (from the DCC core list), the new rule, the ALLOWED vocabulary
+                          (every taught lemma with the exact forms the taught grammar permits), allowed rules,
+                          names, and review targets (earlier lemmas recycled least so far).
+  drafts/L###.json        a lesson skeleton (schema 2) with vocab pre-filled; write intro, grammar card, examples,
+                          exercises, drills and reading, then run scripts/validate_lesson and scripts/add_lesson.
+"""
+import argparse, glob, json, os, re, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import curriculum_lib as C  # noqa: E402
+import latin_morph as M  # noqa: E402
+
+DRAFTS = os.path.join(C.ROOT, "drafts")
+
+
+def simple_pos(e):
+    p = e["pos"]
+    out = {"pos": p.split(":")[0].lower()}
+    m = re.match(r"Noun: (\d)", p)
+    if m:
+        out["decl"] = int(m.group(1))
+        g = re.search(r"\b([mfn])\.", e["entry"])
+        if g:
+            out["gender"] = g.group(1)
+    m = re.match(r"Verb: (\d)\w\w Conjugation( -iō)?", p)
+    if m:
+        out["conj"] = m.group(1) + ("io" if m.group(2) else "")
+    if p.startswith("Adjective: 1st and 2nd"):
+        out["decl"] = "1st/2nd"
+    if p.startswith("Adjective: 3rd"):
+        out["decl"] = 3
+    if p == "Pronoun" and "-a -um" in e["entry"]:
+        out["pos"] = "possessive adjective"
+    return out
+
+
+def short_def(d):
+    d = re.sub(r"\(.*?\)", "", d).split(";")[0].strip(" ,")
+    return d or d
+
+
+def existing_numbers():
+    return sorted(int(os.path.basename(p)[1:4]) for p in glob.glob(os.path.join(C.LESSONS_DIR, "L[0-9][0-9][0-9].json")))
+
+
+def usage_counts(course, upto):
+    """how many earlier lessons' practice items used each lemma (for picking review targets)"""
+    cnt = {}
+    for k in range(1, upto):
+        p = C.lesson_path(k)
+        if not os.path.exists(p):
+            continue
+        _, _, rep = C.validate(course, C.load_json(p), strict_previous=False)
+        for l in rep.get("lemmasUsed", []):
+            cnt[l] = cnt.get(l, 0) + 1
+    return cnt
+
+
+def plan_for(course, n):
+    if n not in course.plan:
+        raise SystemExit(f"lesson {n} is not planned in data/curriculum.json (planned: 1–{max(course.plan)}); extend the curriculum first")
+    pl = course.plan[n]
+    pats = course.unlocked(n)
+    allowed = []
+    for lid in sorted(course.taught(n), key=lambda x: (course.first[x], course.plan[course.first[x]]["newLemmas"].index(x))):
+        e = course.lex[lid]
+        try:
+            forms = M.paradigm(e)
+        except M.Unsupported as ex:
+            allowed.append({"id": lid, "lemma": e["lemma"], "unsupported": str(ex)})
+            continue
+        ok = {}
+        for f, t in forms:
+            if course.tag_ok(t, pats):
+                ok.setdefault(f, []).append(M.describe(t))
+        allowed.append({"id": lid, "lemma": e["lemma"], "en": short_def(e["definition"]), "lesson": course.first[lid],
+                        "forms": {f: " | ".join(dict.fromkeys(v)) for f, v in ok.items()}})
+    cnt = usage_counts(course, n)
+    earlier = [a for a in allowed if a.get("lesson", n) < n]
+    review = sorted(earlier, key=lambda a: (cnt.get(a["id"], 0), a["lesson"]))[:8]
+    rule = course.rules.get(pl["rule"]) if pl.get("rule") else None
+    return {
+        "number": n, "id": C.ID_FMT.format(n), "title": pl["title"], "focus": pl.get("focus"),
+        "newLemmas": [dict({k: course.lex[x][k] for k in ("id", "lemma", "entry", "pos", "definition", "rank", "group")}) for x in pl["newLemmas"]],
+        "newRule": rule, "rulesAllowed": [{"id": r["id"], "lesson": r["lesson"], "title": r["title"]} for r in course.rules_by(n)],
+        "allowedVocabulary": allowed,
+        "reviewTargets": [{"id": a["id"], "lemma": a["lemma"], "timesUsedBefore": cnt.get(a["id"], 0)} for a in review],
+        "reviewShare": "30–50% of exercises+drills must be marked review: true and use an earlier lemma",
+        "names": course.names,
+        "authoringRules": [
+            "Use ONLY the forms listed in allowedVocabulary (+ names from the whitelist, glossed in 'names').",
+            "Latin inside English text (intro, grammar body, notes, prompts) must be in *single asterisks*; use **bold** for English emphasis.",
+            "Exercises translating Latin -> English: answerLang 'en' and the Latin sentence in 'la'.",
+            "Tag items with rules: [...]; mark recycled items review: true.",
+            "End with a short reading passage (reading.la / reading.en) using only known words."],
+    }
+
+
+def skeleton(course, plan):
+    n = plan["number"]
+    vocab = []
+    for x in plan["newLemmas"]:
+        e = course.lex[x["id"]]
+        v = {"id": e["id"], "la": e["lemma"], "dict": e["entry"], "en": short_def(e["definition"]), "rank": e["rank"]}
+        v.update(simple_pos(e))
+        v["notes"] = ""
+        v["example"] = {"la": "TODO", "en": "TODO"}
+        vocab.append(v)
+    rule = plan["newRule"]
+    return {
+        "schemaVersion": 2, "number": n, "id": plan["id"], "curriculum": course.cur["id"],
+        "title": plan["title"], "subtitle": f"Lesson {n}" + (f" · {rule['title']}" if rule else " · review"),
+        "rule": rule["id"] if rule else None,
+        "intro": "TODO", "names": [], "vocab": vocab,
+        "grammar": [{"title": rule["title"], "rules": [rule["id"]], "body": rule["summary"]}] if rule else [],
+        "examples": [], "exercises": [], "drills": [],
+        "reading": {"title": "TODO", "la": "TODO", "en": "TODO"}, "notes": [],
+    }
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("number", nargs="?", type=int)
+    ap.add_argument("--print", action="store_true")
+    ap.add_argument("--force", action="store_true")
+    a = ap.parse_args()
+    course = C.Course()
+    have = existing_numbers()
+    n = a.number or (max(have) + 1 if have else 1)
+    plan = plan_for(course, n)
+    if a.print:
+        print(json.dumps(plan, ensure_ascii=False, indent=1))
+        return
+    os.makedirs(DRAFTS, exist_ok=True)
+    pp = os.path.join(DRAFTS, plan["id"] + ".plan.json")
+    with open(pp, "w", encoding="utf-8") as fh:
+        json.dump(plan, fh, ensure_ascii=False, indent=1)
+    dp = os.path.join(DRAFTS, plan["id"] + ".json")
+    if os.path.exists(dp) and not a.force:
+        print(f"plan -> {pp}\ndraft exists, kept: {dp} (use --force to overwrite)")
+    else:
+        with open(dp, "w", encoding="utf-8") as fh:
+            json.dump(skeleton(course, plan), fh, ensure_ascii=False, indent=1)
+        print(f"plan -> {pp}\ndraft -> {dp}")
+    print(f"Lesson {n}: {plan['title']}\n  new lemmas: {', '.join(x['lemma'] for x in plan['newLemmas'])}\n  new rule: {plan['newRule']['id'] if plan['newRule'] else '(none – review lesson)'}"
+          f"\n  allowed lemmas: {len(plan['allowedVocabulary'])}\n  review targets: {', '.join(x['lemma'] for x in plan['reviewTargets'])}")
+
+
+if __name__ == "__main__":
+    main()
