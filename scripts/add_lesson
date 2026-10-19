@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+"""Add a finished lesson to the course and rebuild.
+
+Usage: scripts/add_lesson drafts/L004.json [--force] [--dry-run]
+
+  * validates with scripts/validate_lesson rules (refuses on any error),
+  * refuses to overwrite an existing lessons/L###.json unless --force (use it to revise a published lesson),
+  * writes lessons/L###.json, then runs scripts/build.py (lexicon, grammar index, app, dist, site).
+The number and id come from the curriculum: lesson N is lessons/L00N.json and must follow lesson N-1.
+"""
+import argparse, json, os, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import curriculum_lib as C  # noqa: E402
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("file")
+    ap.add_argument("--force", action="store_true")
+    ap.add_argument("--dry-run", action="store_true")
+    a = ap.parse_args()
+    lesson = C.load_json(a.file)
+    course = C.Course()
+    E, W, rep = C.validate(course, lesson)
+    for w in W:
+        print("warning:", w)
+    if E:
+        for e in E:
+            print("ERROR:", e, file=sys.stderr)
+        sys.exit(1)
+    dest = C.lesson_path(lesson["number"])
+    if os.path.exists(dest) and not a.force and os.path.abspath(dest) != os.path.abspath(a.file):
+        sys.exit(f"ERROR: {dest} already exists (lesson {lesson['number']} is published) – use --force to replace it")
+    print(f"lesson {lesson['number']} OK: {rep['items']} items, review share {rep['reviewShare']:.0%}, {len(rep['lemmasUsed'])} lemmas used")
+    if a.dry_run:
+        print("dry run – nothing written"); return
+    os.makedirs(C.LESSONS_DIR, exist_ok=True)
+    with open(dest, "w", encoding="utf-8") as fh:
+        json.dump(lesson, fh, ensure_ascii=False, indent=1); fh.write("\n")
+    print("wrote", dest)
+    import build
+    build.build()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,371 @@
+{
+ "schemaVersion": 2,
+ "number": 3,
+ "id": "L003",
+ "curriculum": "dcc-core-v1",
+ "written": "2026-10-19",
+ "title": "Verbs: someone does something",
+ "subtitle": "Lesson 3 · -t = he / she / it",
+ "rule": "verb-3sg",
+ "intro": "So far everything has been *est*. Today Latin starts to move: five common verbs in the he/she/it form – *stat*, *labōrat*, *timet*, *manet*, *rīdet* – and two adverbs, *nunc* 'now' and *saepe* 'often'.",
+ "vocab": [
+  {
+   "id": "sto",
+   "la": "stō",
+   "dict": "stō stāre stetī statum",
+   "en": "stand",
+   "rank": 168,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*stat* = he / she / it stands, is standing.",
+   "example": {
+    "la": "Puella stat.",
+    "en": "The girl is standing."
+   },
+   "pron": "STOH · stat = STAT"
+  },
+  {
+   "id": "laboro",
+   "la": "labōrō",
+   "dict": "labōrō -āre",
+   "en": "work, toil",
+   "rank": 900,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*labōrat* = she / he works, is working.",
+   "example": {
+    "la": "Fēmina labōrat.",
+    "en": "The woman is working."
+   },
+   "accept": [
+    "work",
+    "toil",
+    "labour",
+    "labor"
+   ],
+   "pron": "la-BOH-roh · labōrat = la-BOH-rat"
+  },
+  {
+   "id": "timeo",
+   "la": "timeō",
+   "dict": "timeō -ēre -uī",
+   "en": "fear, be afraid",
+   "rank": 153,
+   "pos": "verb",
+   "conj": "2",
+   "notes": "*timet* = he / she is afraid.",
+   "example": {
+    "la": "Iūlia nōn timet.",
+    "en": "Julia is not afraid."
+   },
+   "accept": [
+    "fear",
+    "be afraid",
+    "to fear"
+   ],
+   "pron": "TI-me-oh · timet = TI-met"
+  },
+  {
+   "id": "maneo",
+   "la": "maneō",
+   "dict": "maneō manēre mānsī mānsum",
+   "en": "stay, remain",
+   "rank": 357,
+   "pos": "verb",
+   "conj": "2",
+   "notes": "*manet* = she / he stays.",
+   "example": {
+    "la": "Cornēlia manet.",
+    "en": "Cornelia stays."
+   },
+   "accept": [
+    "stay",
+    "remain",
+    "wait"
+   ],
+   "pron": "MA-ne-oh · manet = MA-net"
+  },
+  {
+   "id": "rideo",
+   "la": "rīdeō",
+   "dict": "rīdeō -ēre rīsī rīsum",
+   "en": "laugh",
+   "rank": 874,
+   "pos": "verb",
+   "conj": "2",
+   "notes": "*rīdet* = she / he laughs.",
+   "example": {
+    "la": "Puella rīdet.",
+    "en": "The girl laughs."
+   },
+   "accept": [
+    "laugh",
+    "smile",
+    "laugh at"
+   ],
+   "pron": "REE-de-oh · rīdet = REE-det"
+  },
+  {
+   "id": "nunc",
+   "la": "nunc",
+   "dict": "nunc",
+   "en": "now",
+   "rank": 50,
+   "pos": "adverb",
+   "example": {
+    "la": "Nunc Iūlia rīdet.",
+    "en": "Now Julia is laughing."
+   },
+   "pron": "NOONK"
+  },
+  {
+   "id": "saepe",
+   "la": "saepe",
+   "dict": "saepe",
+   "en": "often",
+   "rank": 145,
+   "pos": "adverb",
+   "example": {
+    "la": "Fēmina saepe labōrat.",
+    "en": "The woman often works."
+   },
+   "pron": "SIGH-pe"
+  }
+ ],
+ "grammar": [
+  {
+   "title": "-t means he, she or it",
+   "rules": [
+    "verb-3sg"
+   ],
+   "body": "*rīdet* means 'she laughs' or 'he laughs' (or 'it laughs') – also 'is laughing': Latin has one present tense for both. The ending **-t** says the subject is one person or thing.\n\nIf the sentence names the subject, that word is the subject: *Puella rīdet* 'The girl laughs.' With no subject word, *rīdet* alone means 'she / he laughs'.\n\nVerbs come in families. Today's are *-at* verbs (*labōrat*, *stat*) and *-et* verbs (*timet*, *manet*, *rīdet*). Each word card also shows the verb's dictionary form, the 'I …' form in -ō – you will use that form in lesson 10.\n\nThe verb usually comes **last**, and little words such as *nunc* and *saepe* sit before it: *Fēmina saepe labōrat* 'The woman often works.'",
+   "table": {
+    "head": [
+     "Latin",
+     "English"
+    ],
+    "laCols": [
+     0
+    ],
+    "rows": [
+     [
+      "labōrat",
+      "she / he works, is working"
+     ],
+     [
+      "stat",
+      "stands"
+     ],
+     [
+      "timet",
+      "is afraid"
+     ],
+     [
+      "manet",
+      "stays"
+     ],
+     [
+      "rīdet",
+      "laughs"
+     ],
+     [
+      "Puella nunc rīdet.",
+      "The girl is laughing now."
+     ]
+    ]
+   }
+  }
+ ],
+ "examples": [
+  {
+   "la": "Puella rīdet.",
+   "en": "The girl laughs.",
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "la": "Fēmina nunc labōrat.",
+   "en": "The woman is working now.",
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "la": "Iūlia saepe rīdet, sed Cornēlia nōn rīdet.",
+   "en": "Julia often laughs, but Cornelia does not laugh.",
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "la": "Puella parva timet.",
+   "en": "The little girl is afraid.",
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "la": "Via longa est, sed fēmina manet.",
+   "en": "The road is long, but the woman stays.",
+   "rules": [
+    "verb-3sg"
+   ]
+  }
+ ],
+ "exercises": [
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The girl is laughing.",
+   "answer": "Puella rīdet.",
+   "choices": [
+    "Puella rīdet.",
+    "Puella est.",
+    "Puellae rīdet."
+   ],
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Fēmina saepe labōrat.",
+   "answerLang": "en",
+   "answer": "The woman often works.",
+   "accept": [
+    "The woman works often.",
+    "The woman is often working.",
+    "A woman often works.",
+    "The woman often toils."
+   ],
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Julia is not afraid.",
+   "answer": "Iūlia nōn timet.",
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "What does *manet* mean?",
+   "la": "manet",
+   "answerLang": "en",
+   "answer": "stays",
+   "choices": [
+    "stays",
+    "stands",
+    "laughs"
+   ],
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Now Cornelia is standing.",
+   "answer": "Nunc Cornēlia stat.",
+   "accept": [
+    "Cornēlia nunc stat."
+   ],
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Viae nōn sunt longae.",
+   "answerLang": "en",
+   "answer": "The roads are not long.",
+   "accept": [
+    "Roads are not long.",
+    "The roads aren't long.",
+    "The streets are not long."
+   ],
+   "rules": [
+    "nominative-plural"
+   ],
+   "review": true
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The women are tall.",
+   "answer": "Fēminae sunt magnae.",
+   "choices": [
+    "Fēminae sunt magnae.",
+    "Fēmina est magna.",
+    "Fēminae sunt magna."
+   ],
+   "rules": [
+    "nominative-plural"
+   ],
+   "review": true
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: The land is big, but the water is small.",
+   "answer": "Terra magna est, sed aqua parva est.",
+   "accept": [
+    "Terra est magna, sed aqua est parva.",
+    "Terra magna est sed aqua parva est."
+   ],
+   "rules": [
+    "est-sentences"
+   ],
+   "review": true
+  }
+ ],
+ "drills": [
+  {
+   "sentence": "Puella saepe ___.",
+   "answer": "rīdet",
+   "choices": [
+    "rīdet",
+    "bona",
+    "et"
+   ],
+   "en": "The girl often laughs.",
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "sentence": "Fēmina nunc ___.",
+   "answer": "labōrat",
+   "choices": [
+    "labōrat",
+    "via",
+    "nōn"
+   ],
+   "en": "The woman is working now.",
+   "rules": [
+    "verb-3sg"
+   ]
+  },
+  {
+   "sentence": "Puellae ___ parvae.",
+   "answer": "sunt",
+   "choices": [
+    "sunt",
+    "est"
+   ],
+   "en": "The girls are small.",
+   "rules": [
+    "nominative-plural"
+   ],
+   "review": true
+  }
+ ],
+ "reading": {
+  "title": "Via longa",
+  "la": "Via longa est. Iūlia, puella parva, nunc stat. Iūlia nōn timet. Cornēlia, fēmina bona, labōrat. Cornēlia saepe labōrat, sed nunc rīdet. Iūlia manet et Cornēlia manet.",
+  "en": "The road is long. Julia, a little girl, is standing now. Julia is not afraid. Cornelia, a good woman, is working. Cornelia often works, but now she is laughing. Julia stays and Cornelia stays.",
+  "hint": "*Iūlia, puella parva* – a description set between commas just renames the subject."
+ }
+}
