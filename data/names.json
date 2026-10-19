@@ -1,0 +1,61 @@
+{
+ "note": "Whitelist of proper names that lessons may use. A lesson must gloss a name (lesson.names) the first time it uses it.",
+ "names": [
+  {
+   "id": "marcus",
+   "lemma": "Mārcus",
+   "entry": "Mārcus -ī m.",
+   "pos": "Noun: 2nd Declension",
+   "en": "Marcus (a boy's name)"
+  },
+  {
+   "id": "iulia",
+   "lemma": "Iūlia",
+   "entry": "Iūlia -ae f.",
+   "pos": "Noun: 1st Declension",
+   "en": "Julia (a girl's name)"
+  },
+  {
+   "id": "claudia",
+   "lemma": "Claudia",
+   "entry": "Claudia -ae f.",
+   "pos": "Noun: 1st Declension",
+   "en": "Claudia (a girl's name)"
+  },
+  {
+   "id": "cornelia",
+   "lemma": "Cornēlia",
+   "entry": "Cornēlia -ae f.",
+   "pos": "Noun: 1st Declension",
+   "en": "Cornelia (a woman's name)"
+  },
+  {
+   "id": "sextus",
+   "lemma": "Sextus",
+   "entry": "Sextus -ī m.",
+   "pos": "Noun: 2nd Declension",
+   "en": "Sextus (a boy's name)"
+  },
+  {
+   "id": "roma",
+   "lemma": "Rōma",
+   "entry": "Rōma -ae f.",
+   "pos": "Noun: 1st Declension",
+   "en": "Rome"
+  },
+  {
+   "id": "italia",
+   "lemma": "Italia",
+   "entry": "Italia -ae f.",
+   "pos": "Noun: 1st Declension",
+   "en": "Italy"
+  },
+  {
+   "id": "britannia",
+   "lemma": "Britannia",
+   "entry": "Britannia -ae f.",
+   "pos": "Noun: 1st Declension",
+   "en": "Britain"
+  }
+ ]
+}
