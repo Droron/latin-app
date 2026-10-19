@@ -131,8 +131,10 @@ The service worker is network-first with an offline cache; each build has a new 
 
 `scripts/publish` builds, runs the validator test (`--browser-tests` adds the Chrome suite), then pushes the **source** files to
 `Droron/latin-app` (`main`). GitHub Actions (`.github/workflows/pages.yml`) rebuilds from source (lessons are validated again) and deploys
-Pages. On the agent box there are no git credentials, so the script writes `.publish/payload.json` – the arguments for the GitHub MCP tool
-`push_files` (server `user-GitHub-xai`) with `"$file:/abs/path"` contents – the agent sends it and runs `scripts/publish --mark-published`.
+Pages. On the agent box there are no git credentials, so the script writes `.publish/payload.json` – `calls[]`, each the arguments for one
+GitHub MCP `push_files` call (server `user-GitHub-xai`, ≤ 4 files per call because the MCP bridge resolves at most four `"$file:/abs/path"`
+references, workflow last) – the agent sends them in order and then runs `scripts/publish --mark-published`. Each push may need the user's
+approval (saved rule against git push).
 With git credentials, `PUBLISH_VIA_GIT=1 scripts/publish` commits and pushes from `.publish/repo`.
 Not published: `site/`, `dist/`, generated data, `drafts/`, `screenshots/`, `archive/` (the old email lessons, kept only locally).
 
