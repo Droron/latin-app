@@ -113,7 +113,7 @@ def lemma_record(course, lid, first):
         rec["declension"] = "1st/2nd"
     if e["pos"].startswith("Adjective: 3rd"):
         rec["declension"] = 3
-    rec["note"] = (f"Dictionary entry: **{e['entry']}** · DCC frequency rank #{e['rank']} · {e['group']}" if e.get("rank")
+    rec["note"] = (f"Dictionary entry: **{e['entry']}** – {e['definition']} · DCC frequency rank #{e['rank']} · {e['group']}" if e.get("rank")
                    else f"Proper name: **{e['entry']}** (glossed in the lesson; not part of the DCC core list)")
     return rec
 
@@ -137,8 +137,15 @@ def derive_lexicon(lessons, course, reports):
             if tok[:1].islower():
                 d["form"] = tok
     lemmas, warnings = [], []
+    gloss = {}
+    for l in lessons:
+        for v in l["vocab"]:
+            gloss.setdefault(v["id"], v["en"])
+        for x in l.get("names", []):
+            gloss.setdefault("name:" + x["id"], x["en"])
     for lid in order:
         rec = lemma_record(course, lid, first[lid])
+        rec["dccDefinition"], rec["en"] = rec["en"], gloss.get(lid, rec["en"])   # the lesson's short gloss; DCC definition kept
         fs = sorted(seen.get(lid, {}).values(), key=lambda d: (min(d["lessons"]), M.strip(d["form"])))
         parse = lambda d: " or ".join(dict.fromkeys(M.describe(t) for t in sorted(d["tags"])))
         rec["forms"] = {d["form"]: parse(d) for d in fs}

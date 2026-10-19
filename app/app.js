@@ -426,7 +426,7 @@
       <div class="course">${items}</div>`, 'library');
   }
   // ---------------------------------------------------------------- lexicon
-  const POS_LABEL = { noun: 'Nouns', verb: 'Verbs', adjective: 'Adjectives', conjunction: 'Conjunctions', interjection: 'Interjections', pronoun: 'Pronouns', 'proper noun': 'Names' };
+  const POS_LABEL = { noun: 'Nouns', verb: 'Verbs', adjective: 'Adjectives', adverb: 'Adverbs', preposition: 'Prepositions', conjunction: 'Conjunctions', interjection: 'Interjections', pronoun: 'Pronouns', 'proper noun': 'Names' };
   const STATUS_TAG = { new: '', learning: 'red', known: 'green' };
   function lemmaMeta(e) {
     const bits = [];
