@@ -1,0 +1,398 @@
+{
+ "schemaVersion": 2,
+ "number": 4,
+ "id": "L004",
+ "curriculum": "dcc-core-v1",
+ "title": "The object: -am",
+ "subtitle": "Lesson 4 · -m marks the object",
+ "rule": "accusative-singular",
+ "intro": "Until now every sentence had just a subject: *Puella rīdet*. Today the action reaches something: the girl **sees the forest**. Five new verbs that take an object – *amat*, *videt*, *habet*, *vocat*, *laudat* – one new noun, *silva* 'forest', and one new ending: **-m** marks the object.",
+ "names": [],
+ "vocab": [
+  {
+   "id": "amo",
+   "la": "amō",
+   "dict": "amō -āre",
+   "en": "love",
+   "rank": 219,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*amat* = she / he loves, likes.",
+   "example": {
+    "la": "Iūlia silvam amat.",
+    "en": "Julia loves the forest."
+   },
+   "accept": [
+    "like",
+    "love",
+    "to love"
+   ],
+   "pron": "A-moh · amat = A-mat"
+  },
+  {
+   "id": "video",
+   "la": "videō",
+   "dict": "videō vidēre vīdī vīsum",
+   "en": "see",
+   "rank": 31,
+   "pos": "verb",
+   "conj": "2",
+   "notes": "*videt* = she / he sees.",
+   "example": {
+    "la": "Puella aquam videt.",
+    "en": "The girl sees the water."
+   },
+   "accept": [
+    "see",
+    "to see",
+    "watch"
+   ],
+   "pron": "WI-de-oh · videt = WI-det"
+  },
+  {
+   "id": "habeo",
+   "la": "habeō",
+   "dict": "habeō habēre habuī habitum",
+   "en": "have, hold",
+   "rank": 39,
+   "pos": "verb",
+   "conj": "2",
+   "notes": "*habet* = she / he has, holds.",
+   "example": {
+    "la": "Cornēlia aquam habet.",
+    "en": "Cornelia has water."
+   },
+   "accept": [
+    "have",
+    "hold",
+    "to have",
+    "own"
+   ],
+   "pron": "HA-be-oh · habet = HA-bet"
+  },
+  {
+   "id": "voco",
+   "la": "vocō",
+   "dict": "vocō -āre",
+   "en": "call",
+   "rank": 158,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*vocat* = she / he calls.",
+   "example": {
+    "la": "Fēmina puellam vocat.",
+    "en": "The woman calls the girl."
+   },
+   "accept": [
+    "call",
+    "to call",
+    "summon"
+   ],
+   "pron": "WO-koh · vocat = WO-kat"
+  },
+  {
+   "id": "laudo",
+   "la": "laudō",
+   "dict": "laudō -āre",
+   "en": "praise",
+   "rank": 435,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*laudat* = she / he praises.",
+   "example": {
+    "la": "Cornēlia puellam laudat.",
+    "en": "Cornelia praises the girl."
+   },
+   "accept": [
+    "praise",
+    "to praise"
+   ],
+   "pron": "LOW-doh · laudat = LOW-dat"
+  },
+  {
+   "id": "silva",
+   "la": "silva",
+   "dict": "silva -ae f.",
+   "en": "forest",
+   "rank": 234,
+   "pos": "noun",
+   "decl": 1,
+   "gender": "f",
+   "notes": "*silvam* = the forest as an object: *Puella silvam videt.*",
+   "example": {
+    "la": "Silva magna est.",
+    "en": "The forest is big."
+   },
+   "accept": [
+    "forest",
+    "wood",
+    "woods",
+    "grove"
+   ],
+   "pron": "SIL-wa · silvam = SIL-wam"
+  }
+ ],
+ "grammar": [
+  {
+   "title": "-m marks the object",
+   "rules": [
+    "accusative-singular"
+   ],
+   "body": "In *Puella silvam videt* 'The girl sees the forest', the girl does the seeing – she is the **subject** – and the forest is what she sees, the **object**. Latin marks the object with the ending **-m**: *silva* → *silvam*, *puella* → *puellam*.\n\nThe ending, not the word order, says who does what. *Fēmina puellam vocat* and *Puellam fēmina vocat* both mean 'The woman calls the girl.' To make the girl do the calling, swap the endings: *Puella fēminam vocat*.\n\nThe usual order is subject – object – verb. An adjective takes the same ending as its noun: *silvam magnam* 'a big forest'.\n\nWith *est* there is no object, so no -m: *Silva magna est* 'The forest is big.'",
+   "table": {
+    "head": [
+     "Subject",
+     "Object",
+     "English (object)"
+    ],
+    "laCols": [
+     0,
+     1
+    ],
+    "rows": [
+     [
+      "puella",
+      "puellam",
+      "the girl"
+     ],
+     [
+      "fēmina",
+      "fēminam",
+      "the woman"
+     ],
+     [
+      "silva",
+      "silvam",
+      "the forest"
+     ],
+     [
+      "aqua",
+      "aquam",
+      "the water"
+     ],
+     [
+      "via",
+      "viam",
+      "the road"
+     ],
+     [
+      "bona",
+      "bonam",
+      "good"
+     ]
+    ]
+   }
+  }
+ ],
+ "examples": [
+  {
+   "la": "Puella silvam videt.",
+   "en": "The girl sees the forest.",
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "la": "Fēmina puellam vocat.",
+   "en": "The woman calls the girl.",
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "la": "Iūlia aquam amat, sed silvam timet.",
+   "en": "Julia loves the water, but she is afraid of the forest.",
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "la": "Cornēlia puellam bonam laudat.",
+   "en": "Cornelia praises the good girl.",
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "la": "Fēmina viam longam nōn amat.",
+   "en": "The woman does not like the long road.",
+   "rules": [
+    "accusative-singular"
+   ]
+  }
+ ],
+ "exercises": [
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The girl sees the forest.",
+   "answer": "Puella silvam videt.",
+   "choices": [
+    "Puella silvam videt.",
+    "Puellam silva videt.",
+    "Puella silva videt."
+   ],
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Fēmina puellam vocat.",
+   "answerLang": "en",
+   "answer": "The woman calls the girl.",
+   "accept": [
+    "The woman is calling the girl.",
+    "A woman calls a girl.",
+    "The woman calls a girl.",
+    "A woman calls the girl."
+   ],
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Julia loves the water.",
+   "answer": "Iūlia aquam amat.",
+   "accept": [
+    "Aquam Iūlia amat.",
+    "Iūlia amat aquam."
+   ],
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "Which word is the object in *Cornēlia viam longam videt*?",
+   "la": "Cornēlia viam longam videt.",
+   "answer": "viam",
+   "choices": [
+    "viam",
+    "Cornēlia",
+    "videt"
+   ],
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Cornelia praises the good girl.",
+   "answer": "Cornēlia puellam bonam laudat.",
+   "accept": [
+    "Cornēlia bonam puellam laudat.",
+    "Puellam bonam Cornēlia laudat."
+   ],
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Puella parva saepe rīdet.",
+   "answerLang": "en",
+   "answer": "The little girl often laughs.",
+   "accept": [
+    "The small girl often laughs.",
+    "The little girl laughs often.",
+    "A little girl often laughs.",
+    "The little girl often smiles."
+   ],
+   "rules": [
+    "verb-3sg"
+   ],
+   "review": true
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: The woman stays, but the girl is afraid.",
+   "answer": "Fēmina manet, sed puella timet.",
+   "accept": [
+    "Fēmina manet sed puella timet."
+   ],
+   "rules": [
+    "verb-3sg"
+   ],
+   "review": true
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: Now the woman is working.",
+   "answer": "Nunc fēmina labōrat.",
+   "choices": [
+    "Nunc fēmina labōrat.",
+    "Nunc fēminam labōrat.",
+    "Saepe fēmina labōrat."
+   ],
+   "rules": [
+    "verb-3sg"
+   ],
+   "review": true
+  }
+ ],
+ "drills": [
+  {
+   "sentence": "Puella ___ videt.",
+   "answer": "silvam",
+   "choices": [
+    "silvam",
+    "silva"
+   ],
+   "en": "The girl sees the forest.",
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "sentence": "Fēmina ___ vocat.",
+   "answer": "puellam",
+   "choices": [
+    "puellam",
+    "puella",
+    "puellae"
+   ],
+   "en": "The woman calls the girl.",
+   "rules": [
+    "accusative-singular"
+   ]
+  },
+  {
+   "sentence": "Iūlia ___ stat.",
+   "answer": "nunc",
+   "choices": [
+    "nunc",
+    "silvam",
+    "aquam"
+   ],
+   "en": "Julia is standing now.",
+   "rules": [
+    "verb-3sg"
+   ],
+   "review": true
+  },
+  {
+   "sentence": "Viae longae ___.",
+   "answer": "sunt",
+   "choices": [
+    "sunt",
+    "est"
+   ],
+   "en": "The roads are long.",
+   "rules": [
+    "nominative-plural"
+   ],
+   "review": true
+  }
+ ],
+ "reading": {
+  "title": "Silva magna",
+  "la": "Silva magna est. Iūlia silvam videt et silvam amat, sed nunc timet: silva magna est et Iūlia parva est. Cornēlia, fēmina bona, puellam vocat. Iūlia nōn manet; Cornēliam videt et rīdet. Cornēlia aquam habet. Iūlia aquam amat et fēminam bonam laudat.",
+  "en": "The forest is big. Julia sees the forest and loves the forest, but now she is afraid: the forest is big and Julia is small. Cornelia, a good woman, calls the girl. Julia does not stay; she sees Cornelia and laughs. Cornelia has water. Julia loves the water and praises the good woman.",
+  "hint": "Look for **-m**: *silvam*, *puellam*, *Cornēliam*, *aquam*, *fēminam* are the objects – the ones on the receiving end."
+ },
+ "notes": [],
+ "written": "2026-10-19"
+}
