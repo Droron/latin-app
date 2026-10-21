@@ -1,0 +1,420 @@
+{
+ "schemaVersion": 2,
+ "number": 5,
+ "id": "L005",
+ "curriculum": "dcc-core-v1",
+ "title": "They do: -nt",
+ "subtitle": "Lesson 5 · -nt = they do",
+ "rule": "verb-3pl",
+ "intro": "So far one person acted at a time: *Puella labōrat*. Today several people act: *Puellae labōrant* 'The girls work.' The verb's **-t** becomes **-nt**, just like *est* becomes *sunt*. New words: three busy verbs – *parat* 'prepares', *portat* 'carries', *spectat* 'looks at' – plus *multae* 'many', *quoque* 'too' and *ubi* 'when, where'.",
+ "names": [
+  {
+   "id": "claudia",
+   "la": "Claudia",
+   "en": "Claudia (a girl's name)"
+  }
+ ],
+ "vocab": [
+  {
+   "id": "multus",
+   "la": "multus",
+   "dict": "multus -a -um",
+   "en": "much, many",
+   "rank": 43,
+   "pos": "adjective",
+   "decl": "1st/2nd",
+   "notes": "*multae puellae* = many girls. For now you use the feminine forms: *multa*, *multam*, *multae*.",
+   "example": {
+    "la": "Multae puellae rīdent.",
+    "en": "Many girls are laughing."
+   },
+   "accept": [
+    "many",
+    "much",
+    "a lot of"
+   ],
+   "pron": "MUL-tus · multae = MUL-tai"
+  },
+  {
+   "id": "paro",
+   "la": "parō",
+   "dict": "parō -āre",
+   "en": "prepare",
+   "rank": 160,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*parat* = she / he prepares; *parant* = they prepare.",
+   "example": {
+    "la": "Fēminae aquam parant.",
+    "en": "The women get the water ready."
+   },
+   "accept": [
+    "prepare",
+    "get ready",
+    "to prepare",
+    "acquire"
+   ],
+   "pron": "PA-roh · parant = PA-rant"
+  },
+  {
+   "id": "porto",
+   "la": "portō",
+   "dict": "portō -āre",
+   "en": "carry",
+   "rank": 853,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*portat* = she / he carries; *portant* = they carry.",
+   "example": {
+    "la": "Puellae aquam portant.",
+    "en": "The girls carry water."
+   },
+   "accept": [
+    "carry",
+    "to carry",
+    "bring"
+   ],
+   "pron": "POR-toh · portant = POR-tant"
+  },
+  {
+   "id": "specto",
+   "la": "spectō",
+   "dict": "spectō -āre",
+   "en": "look at, watch",
+   "rank": 473,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*videt* = sees; *spectat* = looks at on purpose, watches.",
+   "example": {
+    "la": "Fēminae silvam spectant.",
+    "en": "The women look at the forest."
+   },
+   "accept": [
+    "look at",
+    "watch",
+    "to look at",
+    "to watch",
+    "consider"
+   ],
+   "pron": "SPEK-toh · spectant = SPEK-tant"
+  },
+  {
+   "id": "quoque",
+   "la": "quoque",
+   "dict": "quoque",
+   "en": "also, too",
+   "rank": 76,
+   "pos": "conjunction",
+   "notes": "*quoque* comes **right after** the word it adds: *Iūlia quoque rīdet* 'Julia laughs too.'",
+   "example": {
+    "la": "Puellae rīdent; fēmina quoque rīdet.",
+    "en": "The girls laugh; the woman laughs too."
+   },
+   "accept": [
+    "also",
+    "too",
+    "as well"
+   ],
+   "pron": "KWO-kwe"
+  },
+  {
+   "id": "ubi",
+   "la": "ubi",
+   "dict": "ubi",
+   "en": "when, where",
+   "rank": 92,
+   "pos": "adverb",
+   "notes": "*ubi* joins two sentences: 'when …' or 'where …'.",
+   "example": {
+    "la": "Ubi puellae rīdent, Cornēlia quoque rīdet.",
+    "en": "When the girls laugh, Cornelia laughs too."
+   },
+   "accept": [
+    "when",
+    "where"
+   ],
+   "pron": "U-bi"
+  }
+ ],
+ "grammar": [
+  {
+   "title": "-nt = they do",
+   "rules": [
+    "verb-3pl"
+   ],
+   "body": "One girl works: *puella labōrat*. Two girls work: *puellae labōrant*. When the subject is plural, the verb swaps **-t** for **-nt**: **-t** = he / she / it, **-nt** = they.\n\nIt works for every verb you know: *stat* → *stant*, *videt* → *vident*, *amat* → *amant*. You already met the same pattern in *est* → *sunt*.\n\nThe verb follows its **subject**, not its object: *Puellae aquam portant* 'The girls carry water' – many girls, so -nt, even though there is only one water.\n\nWith no noun, the ending alone means 'they': *Rīdent* 'They laugh.'",
+   "table": {
+    "head": [
+     "One (-t)",
+     "Many (-nt)",
+     "English"
+    ],
+    "laCols": [
+     0,
+     1
+    ],
+    "rows": [
+     [
+      "puella labōrat",
+      "puellae labōrant",
+      "the girl works / the girls work"
+     ],
+     [
+      "stat",
+      "stant",
+      "stands / stand"
+     ],
+     [
+      "videt",
+      "vident",
+      "sees / see"
+     ],
+     [
+      "portat",
+      "portant",
+      "carries / carry"
+     ],
+     [
+      "est",
+      "sunt",
+      "is / are"
+     ]
+    ]
+   }
+  }
+ ],
+ "examples": [
+  {
+   "la": "Puellae labōrant.",
+   "en": "The girls are working.",
+   "rules": [
+    "verb-3pl"
+   ]
+  },
+  {
+   "la": "Fēminae aquam portant.",
+   "en": "The women carry water.",
+   "rules": [
+    "verb-3pl"
+   ]
+  },
+  {
+   "la": "Multae puellae silvam spectant.",
+   "en": "Many girls are looking at the forest.",
+   "rules": [
+    "verb-3pl"
+   ]
+  },
+  {
+   "la": "Iūlia et Claudia rīdent; Cornēlia quoque rīdet.",
+   "en": "Julia and Claudia laugh; Cornelia laughs too.",
+   "rules": [
+    "verb-3pl"
+   ]
+  },
+  {
+   "la": "Ubi fēminae labōrant, puellae quoque labōrant.",
+   "en": "When the women work, the girls work too.",
+   "rules": [
+    "verb-3pl"
+   ]
+  }
+ ],
+ "exercises": [
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The girls are laughing.",
+   "answer": "Puellae rīdent.",
+   "choices": [
+    "Puellae rīdent.",
+    "Puellae rīdet.",
+    "Puella rīdent."
+   ],
+   "rules": [
+    "verb-3pl"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Fēminae aquam portant.",
+   "answerLang": "en",
+   "answer": "The women carry water.",
+   "accept": [
+    "The women are carrying water.",
+    "The women carry the water.",
+    "The women are carrying the water.",
+    "Women carry water.",
+    "The women bring water."
+   ],
+   "rules": [
+    "verb-3pl"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: Julia and Cornelia look at the water.",
+   "answer": "Iūlia et Cornēlia aquam spectant.",
+   "choices": [
+    "Iūlia et Cornēlia aquam spectant.",
+    "Iūlia et Cornēlia aquam spectat.",
+    "Iūlia et Cornēlia aqua spectant."
+   ],
+   "rules": [
+    "verb-3pl",
+    "accusative-singular"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Ubi fēminae labōrant, puellae quoque labōrant.",
+   "answerLang": "en",
+   "answer": "When the women work, the girls work too.",
+   "accept": [
+    "When the women work, the girls also work.",
+    "When the women are working, the girls are working too.",
+    "When the women work the girls work too.",
+    "Where the women work, the girls work too."
+   ],
+   "rules": [
+    "verb-3pl"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: Julia laughs; Claudia laughs too.",
+   "answer": "Iūlia rīdet; Claudia quoque rīdet.",
+   "choices": [
+    "Iūlia rīdet; Claudia quoque rīdet.",
+    "Iūlia rīdet; Claudia quoque rīdent.",
+    "Iūlia rīdent; Claudia quoque rīdet."
+   ],
+   "rules": [
+    "verb-3sg",
+    "verb-3pl"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Many girls are looking at the forest.",
+   "answer": "Multae puellae silvam spectant.",
+   "accept": [
+    "Multae puellae spectant silvam.",
+    "Silvam multae puellae spectant."
+   ],
+   "rules": [
+    "verb-3pl",
+    "accusative-singular"
+   ],
+   "review": true
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Fēminae puellam vocant et laudant.",
+   "answerLang": "en",
+   "answer": "The women call the girl and praise her.",
+   "accept": [
+    "The women call and praise the girl.",
+    "The women call the girl and praise.",
+    "The women are calling the girl and praising her.",
+    "The women call the girl and praise the girl."
+   ],
+   "rules": [
+    "verb-3pl",
+    "accusative-singular"
+   ],
+   "review": true
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: The girls love the land.",
+   "answer": "Puellae terram amant.",
+   "accept": [
+    "Terram puellae amant.",
+    "Puellae amant terram."
+   ],
+   "rules": [
+    "verb-3pl",
+    "accusative-singular"
+   ],
+   "review": true
+  }
+ ],
+ "drills": [
+  {
+   "sentence": "Puellae ___.",
+   "answer": "rīdent",
+   "choices": [
+    "rīdent",
+    "rīdet"
+   ],
+   "en": "The girls laugh.",
+   "rules": [
+    "verb-3pl"
+   ]
+  },
+  {
+   "sentence": "Fēminae viam ___.",
+   "answer": "parant",
+   "choices": [
+    "parant",
+    "parat"
+   ],
+   "en": "The women prepare the road.",
+   "rules": [
+    "verb-3pl"
+   ]
+  },
+  {
+   "sentence": "Silvae ___ sunt.",
+   "answer": "magnae",
+   "choices": [
+    "magnae",
+    "magna",
+    "magnam"
+   ],
+   "en": "The forests are big.",
+   "rules": [
+    "nominative-plural"
+   ],
+   "review": true
+  },
+  {
+   "sentence": "Puella ___ videt.",
+   "answer": "terram",
+   "choices": [
+    "terram",
+    "terra",
+    "terrae"
+   ],
+   "en": "The girl sees the land.",
+   "rules": [
+    "accusative-singular"
+   ],
+   "review": true
+  },
+  {
+   "sentence": "Fēmina puellam ___.",
+   "answer": "habet",
+   "choices": [
+    "habet",
+    "habent"
+   ],
+   "en": "The woman holds the girl.",
+   "rules": [
+    "verb-3sg"
+   ],
+   "review": true
+  }
+ ],
+ "reading": {
+  "title": "Aqua et puellae",
+  "la": "Iūlia et Claudia puellae parvae sunt. Nunc aquam portant: via longa est, sed puellae nōn timent. Cornēlia quoque labōrat; terram parat. Ubi puellae Cornēliam vident, rīdent et fēminam vocant. Cornēlia aquam spectat et rīdet. Multae fēminae nunc labōrant, et puellae quoque labōrant. Puellae bonae sunt.",
+  "en": "Julia and Claudia are little girls. Now they are carrying water: the road is long, but the girls are not afraid. Cornelia is working too; she is preparing the land. When the girls see Cornelia, they laugh and call the woman. Cornelia looks at the water and smiles. Many women are working now, and the girls are working too. The girls are good.",
+  "hint": "Spot the **-nt** verbs: *portant*, *timent*, *vident*, *rīdent*, *vocant*, *labōrant* – each has a plural subject or simply means 'they'."
+ },
+ "notes": [],
+ "written": "2026-10-20"
+}

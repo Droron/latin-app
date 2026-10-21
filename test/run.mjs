@@ -160,7 +160,7 @@ async function suite(vp) {
   // flashcards + match
   await nav('#/practice/flash?scope=all'); await click('#fc'); await sleep(650); await shot(`${tag}-flashcard`);
   check(`${tag} flashcard flips`, await exists('.flash.flipped'));
-  for (let i = 0; i < 30 && !(await exists('.results')); i++) { await click('#fc'); await click('#got'); }
+  for (let i = 0; i < 1000 && !(await exists('.results')); i++) { await click('#fc'); await click('#got'); }
   check(`${tag} flashcards complete`, await exists('.results'));
   await nav('#/practice/match?scope=all');
   await ev(`(async()=>{const s=ms=>new Promise(r=>setTimeout(r,ms)); const L=[...document.querySelectorAll('.tile[data-side=la]')]; const first=L[0]; first.click(); await s(50); const wrong=[...document.querySelectorAll('.tile[data-side=en]')].find(t=>t.dataset.id!==first.dataset.id); wrong.click(); await s(50);

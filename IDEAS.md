@@ -43,3 +43,6 @@
 - Generate `dist/latin.html` and email/host it automatically after each daily add.
 - JSON Schema file + CI check; unit tests for `grade()`.
 - Versioned localStorage migrations when the schema changes.
+
+## Notes from nightly runs
+- 2026-10-20 (Lesson 5): no progress export available on the box, so pacing stayed as planned. `test/run.mjs` flashcard loop was capped at 30 cards and failed once the deck reached 32 words – raised the cap. Consider sharing a progress export before Friday's review.
