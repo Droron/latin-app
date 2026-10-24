@@ -56,7 +56,13 @@ def load_all():
     if nums != list(range(1, len(lessons) + 1)):
         raise LessonError(f"lesson numbers must be 1..{len(lessons)} with no gaps, got {nums}")
     for l in lessons:
-        l.setdefault("date", l.get("written"))
+        if not l.get("written"):   # a lesson without a date broke the Today screen (Lesson 7, Oct 2026): fall back to the file date
+            f = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "lessons", f"{l['id']}.json")
+            ts = os.path.getmtime(f) if os.path.exists(f) else None
+            l["written"] = (datetime.date.fromtimestamp(ts) if ts else datetime.date.today()).isoformat()
+            print(f"warning: {l['id']}: no 'written' date – using {l['written']}")
+        if not l.get("date"):
+            l["date"] = l["written"]
     return lessons, course, reports
 
 

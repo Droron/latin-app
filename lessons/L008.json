@@ -1,0 +1,446 @@
+{
+ "schemaVersion": 2,
+ "number": 8,
+ "id": "L008",
+ "curriculum": "dcc-core-v1",
+ "title": "Neuter nouns: gifts, words, war",
+ "subtitle": "Lesson 8 · Neuter nouns: -um, plural -a",
+ "rule": "second-declension-neuter",
+ "intro": "Until now every noun was either feminine (*puella*) or masculine (*servus*). Latin has a third gender, **neuter** ('neither'), for many things and ideas: *bellum* 'war', *dōnum* 'gift', *verbum* 'word', *oppidum* 'town', *caelum* 'sky'. Neuter nouns have one simple trick: the subject and the object look the same. You also get *novus* 'new' and the very common verb 'give': *dat* 'he / she gives', *dant* 'they give'.",
+ "names": [
+  {
+   "id": "marcus",
+   "la": "Mārcus",
+   "en": "Marcus (a boy's name)"
+  },
+  {
+   "id": "sextus",
+   "la": "Sextus",
+   "en": "Sextus (a boy's name)"
+  },
+  {
+   "id": "iulia",
+   "la": "Iūlia",
+   "en": "Julia (a girl's name)"
+  }
+ ],
+ "vocab": [
+  {
+   "id": "bellum",
+   "la": "bellum",
+   "dict": "bellum -ī n.",
+   "en": "war",
+   "rank": 86,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "n",
+   "notes": "*bellum* 'war' (compare 'belligerent'). Plural *bella* 'wars'.",
+   "example": {
+    "la": "Virī bellum nōn amant.",
+    "en": "The men do not love war."
+   },
+   "accept": [
+    "war",
+    "the war",
+    "a war"
+   ],
+   "pron": "BEL-lum"
+  },
+  {
+   "id": "donum",
+   "la": "dōnum",
+   "dict": "dōnum -ī n.",
+   "en": "gift, present",
+   "rank": 476,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "n",
+   "notes": "*dōnum* 'gift' (compare 'donate'). One gift *dōnum*, several gifts *dōna*, as subject or object.",
+   "example": {
+    "la": "Puer dōnum novum habet.",
+    "en": "The boy has a new gift."
+   },
+   "accept": [
+    "gift",
+    "present",
+    "a gift",
+    "the gift"
+   ],
+   "pron": "DOH-num"
+  },
+  {
+   "id": "verbum",
+   "la": "verbum",
+   "dict": "verbum -ī n.",
+   "en": "word",
+   "rank": 188,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "n",
+   "notes": "*verbum* 'word' (compare 'verbal'). Plural *verba* 'words'.",
+   "example": {
+    "la": "Puella verba nova spectat.",
+    "en": "The girl looks at the new words."
+   },
+   "accept": [
+    "word",
+    "the word",
+    "a word"
+   ],
+   "pron": "WER-bum"
+  },
+  {
+   "id": "oppidum",
+   "la": "oppidum",
+   "dict": "oppidum -ī n.",
+   "en": "town",
+   "rank": 635,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "n",
+   "notes": "*oppidum* is a town, smaller than a city. Plural *oppida* 'towns'.",
+   "example": {
+    "la": "Oppidum parvum est.",
+    "en": "The town is small."
+   },
+   "accept": [
+    "town",
+    "the town",
+    "a town"
+   ],
+   "pron": "OP-pi-dum"
+  },
+  {
+   "id": "caelum",
+   "la": "caelum",
+   "dict": "caelum -ī n.",
+   "en": "sky, heavens",
+   "rank": 117,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "n",
+   "notes": "*caelum* 'sky, heaven' (compare 'celestial'). Usually used in the singular.",
+   "example": {
+    "la": "Caelum māgnum est.",
+    "en": "The sky is big."
+   },
+   "accept": [
+    "sky",
+    "heaven",
+    "heavens",
+    "the sky"
+   ],
+   "pron": "KAI-lum"
+  },
+  {
+   "id": "novus",
+   "la": "novus",
+   "dict": "novus -a -um",
+   "en": "new",
+   "rank": 139,
+   "pos": "adjective",
+   "decl": "1st/2nd",
+   "notes": "*novus* 'new' (compare 'novel', 'novice'). Like *bonus*: *novus*, *nova*, *novum*.",
+   "example": {
+    "la": "Oppidum novum est.",
+    "en": "The town is new."
+   },
+   "accept": [
+    "new"
+   ],
+   "pron": "NO-wus"
+  },
+  {
+   "id": "do",
+   "la": "dō",
+   "dict": "dō dare dedī datum",
+   "en": "give",
+   "rank": 28,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*dat* 'he / she gives', *dant* 'they give'. One of the 30 commonest Latin words (compare 'donor', 'data' = 'things given').",
+   "example": {
+    "la": "Dominus dōna dat.",
+    "en": "The master gives gifts."
+   },
+   "accept": [
+    "give",
+    "to give"
+   ],
+   "pron": "DOH · dat = DAT"
+  }
+ ],
+ "grammar": [
+  {
+   "title": "Neuter nouns: -um, plural -a",
+   "rules": [
+    "second-declension-neuter"
+   ],
+   "body": "Neuter nouns end in **-um** in the singular and **-a** in the plural, and the **same form works as subject and object**: *Bellum longum est* 'The war is long' and *Virī bellum nōn amant* 'The men do not love war.' Plural: *Dōna multa sunt* 'There are many gifts', *Dominus dōna dat* 'The master gives gifts.'\n\nSo how do you tell who does what? Look at the other word and the verb: in *Puer dōnum habet* only *puer* can be the subject, so *dōnum* is the thing he has.\n\nAdjectives describing a neuter noun take the same endings: *dōnum novum* 'a new gift', *dōna nova* 'new gifts', *oppida parva* 'small towns'. Careful: plural *-a* is not the *-a* of *puella*.",
+   "table": {
+    "head": [
+     "Subject / object (one)",
+     "Subject / object (many)",
+     "English"
+    ],
+    "laCols": [
+     0,
+     1
+    ],
+    "rows": [
+     [
+      "bellum",
+      "bella",
+      "war"
+     ],
+     [
+      "dōnum",
+      "dōna",
+      "gift"
+     ],
+     [
+      "verbum",
+      "verba",
+      "word"
+     ],
+     [
+      "oppidum",
+      "oppida",
+      "town"
+     ],
+     [
+      "dōnum novum",
+      "dōna nova",
+      "new gift"
+     ]
+    ]
+   }
+  }
+ ],
+ "examples": [
+  {
+   "la": "Puer dōnum novum habet.",
+   "en": "The boy has a new gift.",
+   "rules": [
+    "second-declension-neuter"
+   ]
+  },
+  {
+   "la": "Dominus dōna multa dat.",
+   "en": "The master gives many gifts.",
+   "rules": [
+    "second-declension-neuter"
+   ]
+  },
+  {
+   "la": "Virī bellum nōn amant.",
+   "en": "The men do not love war.",
+   "rules": [
+    "second-declension-neuter",
+    "verb-3pl"
+   ]
+  },
+  {
+   "la": "Oppidum parvum est, sed caelum māgnum est.",
+   "en": "The town is small, but the sky is big.",
+   "rules": [
+    "second-declension-neuter",
+    "est-sentences"
+   ]
+  },
+  {
+   "la": "Bella longa sunt.",
+   "en": "The wars are long.",
+   "rules": [
+    "second-declension-neuter",
+    "nominative-plural"
+   ]
+  }
+ ],
+ "exercises": [
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The boy has a new gift.",
+   "answer": "Puer dōnum novum habet.",
+   "choices": [
+    "Puer dōnum novum habet.",
+    "Puer dōna novum habet.",
+    "Puer dōnum nova habet."
+   ],
+   "rules": [
+    "second-declension-neuter"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Virī bellum nōn amant.",
+   "answerLang": "en",
+   "answer": "The men do not love war.",
+   "accept": [
+    "Men do not love war.",
+    "The men don't love war.",
+    "The men do not like war.",
+    "The men don't like war."
+   ],
+   "rules": [
+    "second-declension-neuter",
+    "verb-3pl"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The towns are small.",
+   "answer": "Oppida parva sunt.",
+   "choices": [
+    "Oppida parva sunt.",
+    "Oppidum parva sunt.",
+    "Oppida parvae sunt."
+   ],
+   "rules": [
+    "second-declension-neuter",
+    "nominative-plural"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: The master gives many gifts.",
+   "answer": "Dominus dōna multa dat.",
+   "accept": [
+    "Dominus multa dōna dat.",
+    "Dominus dat dōna multa.",
+    "Dominus dat multa dōna."
+   ],
+   "rules": [
+    "second-declension-neuter"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Puella caelum spectat.",
+   "answerLang": "en",
+   "answer": "The girl looks at the sky.",
+   "accept": [
+    "A girl looks at the sky.",
+    "The girl is looking at the sky.",
+    "The girl watches the sky.",
+    "The girl looks at the heavens."
+   ],
+   "rules": [
+    "second-declension-neuter",
+    "verb-3sg"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Servī portam spectant.",
+   "answerLang": "en",
+   "answer": "The slaves look at the gate.",
+   "accept": [
+    "The slaves are looking at the gate.",
+    "Slaves look at the gate.",
+    "The slaves watch the gate.",
+    "The servants look at the gate."
+   ],
+   "rules": [
+    "second-declension-masculine",
+    "accusative-singular"
+   ],
+   "review": true
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The horse is also big.",
+   "answer": "Equus quoque māgnus est.",
+   "choices": [
+    "Equus quoque māgnus est.",
+    "Equum quoque māgnus est.",
+    "Equī quoque māgnus est."
+   ],
+   "rules": [
+    "second-declension-masculine",
+    "est-sentences"
+   ],
+   "review": true
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: The man calls the boys.",
+   "answer": "Vir puerōs vocat.",
+   "accept": [
+    "Puerōs vir vocat.",
+    "Vir vocat puerōs."
+   ],
+   "rules": [
+    "second-declension-masculine"
+   ],
+   "review": true
+  }
+ ],
+ "drills": [
+  {
+   "sentence": "Dominus ___ dat.",
+   "answer": "dōna",
+   "choices": [
+    "dōna",
+    "dōnum",
+    "nova"
+   ],
+   "en": "The master gives gifts.",
+   "rules": [
+    "second-declension-neuter"
+   ]
+  },
+  {
+   "sentence": "Oppidum ___ est.",
+   "answer": "novum",
+   "choices": [
+    "novum",
+    "novus",
+    "nova"
+   ],
+   "en": "The town is new.",
+   "rules": [
+    "second-declension-neuter"
+   ]
+  },
+  {
+   "sentence": "___ equum amat.",
+   "answer": "Puer",
+   "choices": [
+    "Puer",
+    "Puerum",
+    "Puerōs"
+   ],
+   "en": "The boy loves the horse.",
+   "rules": [
+    "second-declension-masculine"
+   ],
+   "review": true
+  },
+  {
+   "sentence": "Puerī ___ sunt.",
+   "answer": "amīcī",
+   "choices": [
+    "amīcī",
+    "amīcus",
+    "amīcōs"
+   ],
+   "en": "The boys are friendly.",
+   "rules": [
+    "second-declension-masculine",
+    "nominative-plural"
+   ],
+   "review": true
+  }
+ ],
+ "reading": {
+  "title": "Oppidum novum",
+  "la": "Oppidum parvum et novum est, et caelum māgnum est. Sextus dominus bonus est. Bellum nōn amat; dōna amat. Nunc servī dōna multa portant, et Sextus dōna dat. Mārcus puer equum novum habet et rīdet. Iūlia quoque dōnum habet. Virī verba bona narrant et dominum laudant. Puerī et puellae caelum spectant et semper rīdent.",
+  "en": "The town is small and new, and the sky is big. Sextus is a good master. He does not love war; he loves gifts. Now the slaves carry many gifts, and Sextus gives the gifts. Marcus, a boy, has a new horse and laughs. Julia also has a gift. The men say good words and praise the master. The boys and girls look at the sky and keep laughing.",
+  "hint": "Neuter words look the same as subject and object: find *oppidum*, *caelum*, *bellum*, *dōna*, *dōnum* and *verba*, and ask each time who is doing what."
+ },
+ "notes": []
+}

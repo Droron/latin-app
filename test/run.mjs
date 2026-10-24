@@ -52,7 +52,12 @@ const ANSWER = `async (correct) => {
   const q = window.LatinApp.current; if (!q || !document.querySelector('#stage .q')) return 'none';
   if (q.kind === 'learn' || q.kind === 'read') { document.querySelector('#cont').click(); await sleep(60); return 'step:' + q.kind; }
   if (q.kind === 'self') { document.querySelector('#reveal').click(); await sleep(40); document.querySelector(correct ? '#selfYes' : '#selfNo').click(); await sleep(60); return correct ? 'ok' : 'no'; }
-  if (q.choices) { const btns = [...document.querySelectorAll('.choice')]; const k = q.choices.findIndex(c => correct ? c.ok : !c.ok); btns[k < 0 ? 0 : k].click(); }
+  if (q.kind === 'build') {
+    const used = new Set(); const order = q.sent.toks.map(t => { const x = q.tiles.find(x => x.real && !used.has(x.i) && LatinApp.norm(x.text) === LatinApp.norm(t.t)); used.add(x.i); return x.i; });
+    const seq = correct ? order : order.slice().reverse().map((i, k, a) => k === 0 && a.length > 1 ? a[1] : k === 1 ? a[0] : i);
+    for (const i of seq) { document.querySelector('.btile[data-i="' + i + '"]').click(); await sleep(15); }
+    document.querySelector('#bcheck').click();
+  } else if (q.choices) { const btns = [...document.querySelectorAll('.choice')]; const k = q.choices.findIndex(c => correct ? c.ok : !c.ok); btns[k < 0 ? 0 : k].click(); }
   else { const inp = document.querySelector('#ans'); let a = q.answers[0];
     if (correct && q.word && q.lang === 'la') a = a.split('/')[0].trim().toUpperCase().replace('A', 'Ā') + '.';   // case + macron + punctuation must be forgiven
     if (correct && q.word && q.lang === 'en') a = 'the ' + a.split(/[\\/,]/)[0].trim();
@@ -141,11 +146,23 @@ async function suite(vp) {
   await nav('#/practice/email?scope=all');
   const em = await runSession(`${tag} lesson exercises`);
   check(`${tag} lesson exercises: all ${exTotal} items graded right`, em.graded === exTotal && em.ok === exTotal, `${em.ok}/${em.graded}`);
+  // ---- sentence structure: free word order, subject/object detection, endings
+  const oo = await ev(`[LatinApp.orderOK('Dominus servōs vocat.', ['dominus','servos','vocat']), LatinApp.orderOK('Dominus servōs vocat.', ['servōs','dominus','vocat']), LatinApp.orderOK('Dominus servōs vocat.', ['dominum','servos','vocat']), LatinApp.orderOK('Mārcus et Sextus amīcī sunt.', ['sextus','et','marcus','amici','sunt'])]`);
+  check(`${tag} build: exact + free word order accepted, wrong ending / split clause refused`, JSON.stringify(oo) === JSON.stringify(['exact', 'free', false, false]), JSON.stringify(oo));
+  const ro = await ev(`LatinApp.roles('all')`);
+  const dom = ro.find(r => r.la === 'Dominus servōs vocat.');
+  check(`${tag} who-does-what: subject/object found from the endings`, ro.length >= 5 && dom && JSON.stringify(dom.ok) === JSON.stringify(dom.role === 'acc' ? ['servōs'] : ['Dominus']), `${ro.length} items; ${JSON.stringify(dom)}`);
+  check(`${tag} who-does-what never asks about an ambiguous ending`, ro.every(r => r.ok.length >= 1));
+  check(`${tag} endings drill has items`, (await ev(`LatinApp.forms('all')`)) >= 5);
   // ---- all practice modes
-  for (const m of ['mc', 'mcr', 'type', 'listen', 'fill', 'mix']) {
+  for (const m of ['mc', 'mcr', 'type', 'listen', 'fill', 'build', 'role', 'forms', 'mix']) {
     await nav(`#/practice/${m}?scope=all`);
     if (m === 'mc') await shot(`${tag}-exercise-mc`);
     if (m === 'fill') await shot(`${tag}-exercise-fill`);
+    if (m === 'build') { await ev(`(async()=>{const q=LatinApp.current; const t=q.sent.toks; const used=new Set(); for (const x of t.slice(0, Math.max(1, t.length - 1))) { const y=q.tiles.find(y=>y.real&&!used.has(y.i)&&LatinApp.norm(y.text)===LatinApp.norm(x.t)); used.add(y.i); document.querySelector('#bbank .btile[data-i="'+y.i+'"]').click(); await new Promise(r=>setTimeout(r,20)); } })()`); await shot(`${tag}-exercise-build`);
+      await ev(`document.querySelector('#bclear').click()`); check(`${tag} build: clear returns all tiles`, (await count('#bline .btile')) === 0); }
+    if (m === 'role' && tag === 'phone') { await ev(`(${ANSWER.replace("fb?.querySelector('.next-btn')?.click();", '')})(true)`); await shot(`${tag}-exercise-role`); await ev(`document.querySelector('.feedback .next-btn').click()`); await sleep(200); }
+    if (m === 'forms') await shot(`${tag}-exercise-forms`);
     if (m === 'mc' && tag === 'phone') { await ev(`(${ANSWER.replace("fb?.querySelector('.next-btn')?.click();", '')})(true)`); await shot(`${tag}-exercise-feedback`); await ev(`document.querySelector('.feedback .next-btn').click()`); await sleep(200); }
     const r = await runSession(`${tag} ${m}`, { collect: m === 'fill' });
     check(`${tag} ${m}: right answers graded correct`, r.ok === r.graded, `${r.ok}/${r.graded}`);
