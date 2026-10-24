@@ -1,9 +1,13 @@
 # Ideas / backlog
 
 ## Next (weekly pass)
+- **Publishing:** the live site stopped at Lesson 5 (last push 2026-10-21); lessons 6–7 are only local. Check the nightly publish step.
+- Who-does-what for questions and for sentences with two clauses; add dative/ablative once the course reaches them.
+- Translate-the-reading mode: whole passage, sentence by sentence, with build tiles for the hardest sentence.
+- Agreement drill (pick the adjective form that matches the noun) once adjectives appear in more cases/genders.
 - Extend `latin_morph.py` before the outline needs it: deponents, volō/nōlō/ferō, comparatives, participles, passive, subjunctive.
 - Syntax checks in the validator: preposition + required case (in + abl. vs acc.), adjective–noun agreement, subject–verb number.
-- Spaced review of *sentences* and rules (not only words): resurface missed exercises from earlier lessons.
+- Spaced review of missed *sentences* (rules are done since 3.0): resurface missed exercises from earlier lessons.
 - Auto-pick review targets from the user's exported progress (weak lemmas/rules) in `generate_lesson`.
 - Per-lesson audio: record/generate classical pronunciation for the reading passage.
 - Show "words you can read" coverage: % of a real text (e.g. Caesar BG 1.1) covered by taught lemmas.

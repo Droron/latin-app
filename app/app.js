@@ -12,7 +12,7 @@
   const DAY = 86400000;
   const dayKey = (d = new Date()) => { const z = new Date(d); return `${z.getFullYear()}-${String(z.getMonth() + 1).padStart(2, '0')}-${String(z.getDate()).padStart(2, '0')}`; };
   const parseDay = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
-  const fmtDate = k => parseDay(k).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const fmtDate = k => k && /^\d{4}-\d\d-\d\d/.test(k) ? parseDay(k).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'new';   // a missing date must never break a screen
   const roman = n => { const t = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]; let r = ''; for (const [v, s] of t) while (n >= v) { r += s; n -= v; } return r; };
   const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
 
@@ -179,7 +179,7 @@
   }
   // grammar rule progress: last 20 results per rule
   function recordRules(ids, ok) {
-    (ids || []).forEach(id => { if (!RBY.has(id)) return; const r = S.rules[id] = S.rules[id] || { h: [], n: 0, right: 0 }; r.h.push(ok ? 1 : 0); if (r.h.length > 20) r.h.shift(); r.n++; if (ok) r.right++; });
+    (ids || []).forEach(id => { if (!RBY.has(id)) return; const r = S.rules[id] = S.rules[id] || { h: [], n: 0, right: 0 }; r.last = Date.now(); r.h.push(ok ? 1 : 0); if (r.h.length > 20) r.h.shift(); r.n++; if (ok) r.right++; });
     save();
   }
   function ruleProgress(r) {
@@ -257,6 +257,9 @@
     lock: svg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
     left: svg('<path d="M15 5l-7 7 7 7"/>'), right: svg('<path d="M9 5l7 7-7 7"/>'),
     play: svg('<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>'),
+    build: svg('<rect x="2.5" y="14" width="6" height="6" rx="1.2"/><rect x="9" y="14" width="6" height="6" rx="1.2"/><rect x="15.5" y="14" width="6" height="6" rx="1.2"/><rect x="6" y="5" width="6" height="6" rx="1.2" stroke-dasharray="2 2"/><path d="M14 8h4l-2-2M18 8l-2 2"/>'),
+    role: svg('<circle cx="7" cy="8" r="3"/><path d="M2.5 19c.6-3 2.4-4.5 4.5-4.5s3.9 1.5 4.5 4.5"/><path d="M13 9h5M16 6l3 3-3 3"/><rect x="15" y="14" width="6" height="6" rx="1.2"/>'),
+    forms: svg('<path d="M4 7h9M4 12h6M4 17h9"/><path d="M15 6.5h5M15 11.5h5M15 16.5h5" stroke-width="2.6"/>'),
   });
 
   // ---------------------------------------------------------------- chrome
@@ -639,12 +642,18 @@
     ['fill', 'Fill the blank', 'Complete sentences & grammar', I.blank],
     ['listen', 'Listen', 'Hear it, choose the meaning', I.ear],
     ['email', 'Lesson exercises', "Each lesson's own questions", I.mail],
+    ['build', 'Build the sentence', 'Put the Latin words in order', I.build],
+    ['role', 'Who does what?', 'Find the subject and the object', I.role],
+    ['forms', 'Endings', 'Pick the right form of a word', I.forms],
   ];
   function modeTiles(scope, origin, sec) {
     const emailCount = lessonsFor(scope).reduce((n, l) => n + (l.exercises || []).length, 0);
+    const ss = sentencesFor(scope);
+    const avail = { email: emailCount, build: ss.filter(x => x.toks.length >= 3).length, role: roleItems(ss).length, forms: formsFor(scope).length };
     return `<div class="modes">${MODES.map(([k, t, d, ic], i) => {
-      const off = k === 'email' && !emailCount;
-      return ` <button class="mode" data-mode="${k}" data-scope="${scope}"${origin ? ` data-from="${esc(origin)}" data-sec="${sec || ''}"` : ''} style="animation-delay:${i * .03}s" ${off ? 'disabled' : ''}><span class="ico">${ic}</span><b>${t}</b><span>${off ? 'None yet' : k === 'email' ? `${emailCount} questions` : d}</span></button>`;
+      const off = k in avail && !avail[k];
+      const isNew = ['build', 'role', 'forms'].includes(k);
+      return ` <button class="mode${isNew ? ' fresh' : ''}" data-mode="${k}" data-scope="${scope}"${origin ? ` data-from="${esc(origin)}" data-sec="${sec || ''}"` : ''} style="animation-delay:${i * .03}s" ${off ? 'disabled' : ''}><span class="ico">${ic}</span><b>${t}</b><span>${off ? (k === 'role' ? 'From Lesson 4 (objects)' : k === 'forms' ? 'Needs 2+ forms of a word' : 'None yet') : k === 'email' ? `${emailCount} questions` : d}</span></button>`;
     }).join('')}</div>`;
   }
   function viewPractice(scope) {
@@ -663,11 +672,13 @@
     const boxes = [1, 2, 3, 4, 5, 6].map(b => pool.filter(w => box(w) === b).length);
     const next = pool.map(w => S.srs[w.id]).filter(c => c && c.due > Date.now()).sort((a, b) => a.due - b.due)[0];
     const label = ['Today', '1 day', '3 days', '1 week', '2 weeks', '1 month'];
+    const refresh = refreshRules();
     setView(`<div class="eyebrow">Repetitio</div><h1 style="font-size:30px;margin:4px 0 6px">Spaced review</h1>
       <p class="muted" style="margin:0 0 16px">Words from Lessons 1–${reachedN()}. New words are introduced in lesson order; right answers move a word up a box, misses send it back to box 1.</p>
       <div class="stat-grid"><div class="stat"><b>${due.length}</b><span>Due now</span></div><div class="stat"><b>${Math.min(allow, fresh.length)}</b><span>New today</span></div>
       <div class="stat"><b>${pool.length - fresh.length}</b><span>In rotation</span></div><div class="stat"><b>${boxes[3] + boxes[4] + boxes[5]}</b><span>Known</span></div></div>
-      <a class="btn btn-primary btn-block" style="margin-top:16px" href="#/review/go" ${due.length || (allow && fresh.length) ? '' : 'disabled'}>${I.review} ${due.length ? `Review ${due.length} word${due.length > 1 ? 's' : ''}` : allow && fresh.length ? `Learn ${Math.min(allow, fresh.length)} new words` : 'All caught up'}</a>
+      <a class="btn btn-primary btn-block" style="margin-top:16px" href="#/review/go" ${due.length || (allow && fresh.length) || refresh.length ? '' : 'disabled'}>${I.review} ${due.length ? `Review ${due.length} word${due.length > 1 ? 's' : ''}` : allow && fresh.length ? `Learn ${Math.min(allow, fresh.length)} new words` : refresh.length ? 'Refresh your grammar' : 'All caught up'}</a>
+      ${refresh.length ? `<div class="card refresh-card"><span class="ico">${I.scroll}</span><div><b>Grammar to refresh</b><div class="muted">${refresh.map(r => { const p = ruleProgress(r); return `<a href="#/grammar/${r.id}">Rule ${r.number} · ${esc(r.title)}</a> <small>${p.acc}%</small>`; }).join('<br>')}</div><small class="muted">Added to the end of your review: one sentence to build and one question per rule.</small></div></div>` : ''}
       ${fresh.length && allow ? `<p class="muted" style="text-align:center;font-size:14px">Next new: ${fresh.slice(0, Math.min(allow, 6)).map(w => `<span class="la">${esc(w.la)}</span>`).join(', ')}</p>` : ''}
       ${!due.length && next ? `<p class="muted" style="text-align:center;font-size:14px">Next word due ${new Date(next.due).toLocaleString('en-GB', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</p>` : ''}
       <section class="section card"><h3 style="font-size:18px;margin-bottom:12px">Leitner boxes</h3><div class="boxes">
@@ -788,6 +799,138 @@
   const lessonFill = l => (l.drills || []).map(d => drillItem(d, l)).concat(clozeItems(l));
   const sect = (items, name) => items.map(q => Object.assign(q, { section: name }));
 
+  // ---------------------------------------------------------------- sentence structure (3.0): build the sentence, who does what, endings
+  // Every token of a known sentence is parsed from the lexicon (forms seen + their parse), so these exercises grow with the course by themselves.
+  const FORM_INFO = new Map();
+  LEX.lemmas.forEach(e => ((e.derived || {}).formsSeen || []).forEach(f => { const k = norm(f.form); if (!FORM_INFO.has(k)) FORM_INFO.set(k, []); FORM_INFO.get(k).push({ e, parse: f.parse || '', first: f.lessons[0] }); }));
+  const caseOf = p => /nominative/.test(p) ? 'nom' : /accusative/.test(p) ? 'acc' : null;
+  const isNounish = t => t.pos === 'noun' || t.pos === 'proper noun';
+  function analyse(la, n) {
+    return la.trim().replace(/[.!?]+$/, '').split(/\s+/).map(raw => {
+      const m = raw.match(/^(.*?)([!?,.;:]*)$/), t = m[1];
+      const infos = (FORM_INFO.get(norm(t)) || []).filter(x => x.e.derived && x.e.derived.firstLesson <= n);
+      const lemma = infos[0] ? infos[0].e : null;
+      return { raw, t, post: m[2], infos, lemma, pos: lemma ? lemma.pos : null, cases: new Set(infos.map(x => caseOf(x.parse)).filter(Boolean)) };
+    });
+  }
+  // all sentences the course has shown so far (examples, word examples, completed drills), each tagged with its lesson and rules
+  function sentencePool(lessons) {
+    const out = [], seen = new Set();
+    lessons.forEach(l => {
+      const add = (la, en, rules) => {
+        if (!la || !en || seen.has(norm(la))) return; seen.add(norm(la));
+        const body = la.trim().replace(/[.!?]+$/, '');
+        if (/[.!?;:]/.test(body)) return;                                   // one sentence only
+        const toks = analyse(la, l.n);
+        if (toks.length < 2 || toks.length > 8 || toks.some(t => !t.lemma)) return;
+        out.push({ la: la.trim(), en, rules: (rules || []).filter(id => RBY.has(id)), lesson: l.n, toks, question: /\?$/.test(la.trim()), comma: /,/.test(body) });
+      };
+      (l.examples || []).forEach(e => add(e.la, e.en, e.rules));
+      l.vocab.forEach(v => v.example && add(v.example.la, v.example.en, []));
+      (l.drills || []).forEach(d => d.en && add(d.sentence.replace('___', d.answer), d.en, d.rules));
+    });
+    return out;
+  }
+  const sentencesFor = scope => scope === 'all' ? sentencePool(reachedLessons()) : sentencePool(LESSONS.filter(l => l.n <= (LBY.get(scope) || { n: 0 }).n)).filter(s => s.lesson === (LBY.get(scope) || {}).n);
+  // Latin word order is free inside a simple clause: accept any order that keeps nōn / prepositions in front of their word and quoque after it
+  const CLAUSE_SPLIT = new Set(['et', 'sed', 'ubi', 'nam', 'quod', 'cum']);
+  function orderOK(s, got) {
+    const want = s.toks.map(t => norm(t.t)); got = got.map(x => norm(x));
+    if (got.join(' ') === want.join(' ')) return 'exact';
+    if (got.slice().sort().join(' ') !== want.slice().sort().join(' ')) return false;
+    if (s.question || s.comma || want.some(w => CLAUSE_SPLIT.has(w))) return false;
+    const adj = (a, b) => got.some((g, j) => g === a && got[j + 1] === b);
+    for (let i = 0; i < want.length; i++) {
+      if ((want[i] === 'non' || s.toks[i].pos === 'preposition') && i + 1 < want.length && !adj(want[i], want[i + 1])) return false;
+      if (want[i] === 'quoque' && i > 0 && !adj(want[i - 1], want[i])) return false;
+    }
+    return 'free';
+  }
+  const showTok = t => t.pos === 'proper noun' ? t.t : t.t.toLowerCase();      // no capital on the first tile – that would give the start away
+  const mastered = id => RBY.has(id) && ruleProgress(RBY.get(id)).status === 'mastered';
+  function buildItem(s) {
+    // harder mode: once every rule in the sentence is mastered (or from level 4), one extra tile with the wrong ending is mixed in
+    const challenge = s.rules.length ? s.rules.every(mastered) : level().lv >= 4;
+    const tiles = s.toks.map((t, i) => ({ text: showTok(t), i, real: true }));
+    if (challenge) {
+      const cand = shuffle(s.toks.filter(t => t.lemma && t.pos !== 'proper noun'));
+      for (const t of cand) {
+        const alt = shuffle(formsUpTo(t.lemma, s.lesson)).find(f => norm(f) !== norm(t.t) && !s.toks.some(o => norm(o.t) === norm(f)));
+        if (alt) { tiles.push({ text: alt.toLowerCase(), i: tiles.length, real: false }); break; }
+      }
+    }
+    const hard = tiles.length > s.toks.length;
+    return { kind: 'build', label: hard ? 'Build the sentence · challenge' : 'Build the sentence', en: s.en, answer: s.la, sent: s, rules: s.rules, lesson: s.lesson,
+      tiles: shuffle(tiles), want: s.toks.length, challenge: hard };
+  }
+  const ROLE_TXT = { nom: ['subject', 'who or what does it', 'nominative'], acc: ['object', 'who or what it is done to', 'accusative'] };
+  function roleItems(sents) {
+    const out = [];
+    sents.forEach(s => {
+      const t = s.toks;
+      if (s.question || t.some(x => x.cases.size > 1)) return;                // an ending that could be either case (e.g. neuter -um) – skip
+      const nom = t.filter(x => x.cases.has('nom') && isNounish(x)), acc = t.filter(x => x.cases.has('acc') && isNounish(x));
+      const verb = t.find(x => x.pos === 'verb' && x.lemma.id !== 'sum');
+      if (!nom.length || !acc.length || !verb) return;
+      const role = !t[0].cases.has('nom') || out.length % 3 === 2 ? 'nom' : 'acc';   // mostly ask for the word that is NOT in first place
+      const [name, what, cs] = ROLE_TXT[role];
+      const list = (xs, c) => xs.filter(x => x.cases.has(c) && x.pos !== 'verb').map(x => `*${x.t}*`).join(' ');
+      out.push({ kind: 'role', label: 'Who does what?', role, prompt: `Tap the ${name} – ${what}`, sent: s, lesson: s.lesson,
+        rules: s.rules.length ? s.rules : ['accusative-singular'].filter(id => RBY.has(id)),
+        choices: t.map(x => ({ text: x.t + x.post, ok: x.cases.has(role) && x.pos !== 'verb' && x.pos !== 'adverb' })),
+        answer: nom.length && role === 'nom' ? nom.map(x => x.t).join(' + ') : acc.map(x => x.t).join(' + '),
+        explain: `Subject (nominative): ${list(t, 'nom')} · object (accusative): ${list(t, 'acc')} · verb: *${verb.t}*. ${s.en}`, roleCase: cs });
+    });
+    return out;
+  }
+  const PARSE_RULE = [[/accusative plural/, 'accusative-plural'], [/accusative singular/, 'accusative-singular'], [/nominative plural/, 'nominative-plural'], [/3rd person plural/, 'verb-3pl'], [/3rd person singular/, 'verb-3sg']];
+  function plainParse(p) {
+    if (/3rd person singular/.test(p)) return 'he / she / it does it';
+    if (/3rd person plural/.test(p)) return 'they do it';
+    const c = /nominative/.test(p) ? 'subject' : /accusative/.test(p) ? 'object' : '';
+    const num = /plural/.test(p) ? 'plural' : /singular/.test(p) ? 'singular' : '';
+    const g = /fem\./.test(p) ? ', with a feminine noun' : /masc\./.test(p) ? ', with a masculine noun' : '';
+    return [c, num].filter(Boolean).join(', ') + g;
+  }
+  function formItems(lemmas, n) {
+    const out = [];
+    lemmas.forEach((e, idx) => {
+      if (!e.derived || e.pos === 'proper noun') return;
+      const fs = []; ((e.derived || {}).formsSeen || []).filter(f => f.lessons[0] <= n && f.parse && f.parse !== 'invariable').forEach(f => { if (!fs.some(x => norm(x.form) === norm(f.form))) fs.push(f); });
+      if (fs.length < 2) return;
+      const target = fs[(idx + n) % fs.length];
+      const others = fs.filter(f => f !== target && f.parse !== target.parse && plainParse(f.parse) !== plainParse(target.parse));
+      if (!others.length) return;
+      const rules = PARSE_RULE.filter(([re]) => re.test(target.parse)).map(([, id]) => id).filter(id => RBY.has(id)).slice(0, 1);
+      const cards = CARDS_OF.get(e.id) || [], strong = cards.length && cards.every(w => box(w) >= 4);
+      const base = { label: strong ? 'Endings · type the form' : 'Endings', lemma: e, parse: target.parse, plain: plainParse(target.parse), answer: target.form, rules, lesson: n,
+        explain: `*${target.form}* = ${e.lemma} – ${target.parse}.` };
+      if (strong) out.push(Object.assign(base, { kind: 'type', form: true, strict: true, prompt: `${e.lemma} → ${base.plain}`, promptIsEn: true, answers: [target.form], lang: 'la' }));   // harder: type it
+      else out.push(Object.assign(base, { kind: 'form', choices: shuffle([target, ...pick(others, 3)]).map(f => ({ text: f.form, ok: f === target })) }));
+    });
+    return out;
+  }
+  function formsFor(scope) {
+    if (scope === 'all') return formItems(LEMMAS.filter(e => e.derived.firstLesson <= reachedN()), reachedN());
+    const l = LBY.get(scope); if (!l) return [];
+    return formItems(LEMMAS.filter(e => l.vocab.some(v => v.id === e.id) || (e.derived.lessons || []).includes(l.n) && e.derived.firstLesson <= l.n), l.n);
+  }
+  // grammar refreshers for spaced review: the weakest rules you have practised (not yet mastered, or mastered but not seen for 3+ days)
+  function refreshRules() {
+    return RULES.filter(r => ruleReached(r) && S.rules[r.id] && S.rules[r.id].n).map(r => ({ r, p: ruleProgress(r), last: S.rules[r.id].last || 0 }))
+      .filter(x => x.p.status !== 'mastered' || Date.now() - x.last > 3 * DAY)
+      .sort((a, b) => (a.p.status === 'mastered') - (b.p.status === 'mastered') || a.p.acc - b.p.acc || a.last - b.last).slice(0, 2).map(x => x.r);
+  }
+  function refresherItems() {
+    const sents = sentencePool(reachedLessons()), out = [];
+    refreshRules().forEach(r => {
+      const tag = q => Object.assign(q, { label: `Grammar refresher · Rule ${r.number}`, refresher: true });
+      const qz = quizFor(r).filter(q => q.kind !== 'self'); if (qz.length) out.push(tag(pick(qz, 1)[0]));
+      const ss = sents.filter(s => s.rules.includes(r.id)); if (ss.length) out.push(tag(buildItem(pick(ss, 1)[0])));
+    });
+    return out;
+  }
+
   function courseQueue(l) {
     const pool = poolFor(l.id), q = [];
     const ws = ALL_WORDS.filter(w => w.lessons.includes(l.id)).sort((a, b) => {   // this lesson's word-list order
@@ -798,6 +941,8 @@
     sect(g.concat((l.drills || []).map(d => drillItem(d, l))), 'Grammar').forEach(x => q.push(x));
     const ex = (l.exercises || []), normal = ex.filter(x => x.check !== 'self'), self = ex.filter(x => x.check === 'self');
     sect(normal.length ? normal.map(x => exerciseItem(x, l)) : clozeItems(l), 'Exercises').forEach(x => q.push(x));
+    const ls = sentencesFor(l.id), roles = roleItems(ls), builds = ls.filter(x => x.toks.length >= 3);
+    sect([...(builds.length ? [buildItem(builds[builds.length - 1])] : []), ...roles.slice(0, 1)], 'Exercises').forEach(x => q.push(x));
     const tr = self.map(x => exerciseItem(x, l));
     if (l.reading && !self.some(x => norm(x.prompt).includes(norm(l.reading.la)))) tr.push(readingItem(l));
     sect(tr, 'Translation').forEach(x => q.push(x));
@@ -813,21 +958,27 @@
       case 'listen': return pickWeak(ws, 10).map(w => qListen(w, pool));
       case 'fill': { const f = ls.flatMap(lessonFill); return scope === 'all' ? f.slice(-12) : f; }
       case 'email': return ls.flatMap(l => (l.exercises || []).map(x => exerciseItem(x, l)));
+      case 'build': { const s = sentencesFor(scope).filter(x => x.toks.length >= 3); return (scope === 'all' ? pick(s, 8) : s.slice(0, 8)).sort((a, b) => a.lesson - b.lesson).map(buildItem); }
+      case 'role': { const r = roleItems(sentencesFor(scope)); return (scope === 'all' ? pick(r, 8) : r.slice(0, 8)).sort((a, b) => a.lesson - b.lesson); }
+      case 'forms': { const f = formsFor(scope); return pick(f, 10); }
       case 'mix': {
         const v = sect(pickWeak(ws, 6).map((w, i) => [qMC(w, pool, false), qMC(w, pool, true), qType(w)][i % 3]), 'Words');
         const f = sect(ls.flatMap(lessonFill).slice(-4), 'Grammar');
         const e = sect(ls.flatMap(l => (l.exercises || []).filter(x => x.check !== 'self').map(x => exerciseItem(x, l))).slice(-2), 'Exercises');
-        return v.concat(f, e);
+        const ss = sentencesFor(scope), b = ss.filter(x => x.toks.length >= 3);
+        const g2 = sect([...pick(formsFor(scope), 1), ...pick(roleItems(ss), 1)], 'Grammar');
+        return v.concat(f, g2, e, sect(b.length ? [buildItem(pick(b, 1)[0])] : [], 'Exercises'));
       }
       case 'course': { const l = LBY.get(scope); return l ? courseQueue(l) : []; }
       case 'rule': { const r = RBY.get(scope); return r ? quizFor(r) : []; }
       case 'review': {
         const due = shuffle(dueWords()), fresh = newWords().slice(0, newAllowance());   // new words strictly in lesson order
-        return due.concat(fresh).slice(0, 20).map(w => {
+        const words = due.concat(fresh).slice(0, 20).map(w => {
           const b = box(w), all = reachedWords();
           const q = b <= 1 ? qMC(w, all, false) : b === 2 ? qMC(w, all, true) : b === 3 ? qTypeEn(w) : qType(w);
           q.isNew = !S.srs[w.id]; return q;
         });
+        return words.length ? words.concat(refresherItems()) : refresherItems();
       }
     }
     return [];
@@ -900,6 +1051,19 @@
       } else if (q.kind === 'fill') {
         h += `<div class="q-prompt sentence">${esc(q.sentence).replace('___', '<span class="blank">?</span>')}</div><div class="q-sub">${esc(q.en || '')}${q.hint ? ` · <i>hint: ${esc(q.hint)}</i>` : ''}</div>`;
         h += `<div class="choices">${q.choices.map((c, k) => `<button class="choice la-choice" data-k="${k}"><span class="k">${k + 1}</span>${esc(c.text)}</button>`).join('')}</div>`;
+      } else if (q.kind === 'build') {
+        h += `<div class="q-prompt en build-en">${esc(q.en)}</div><div class="q-sub">${q.challenge ? 'Challenge: one tile has the wrong ending – leave it out' : 'Tap the words in order · any correct Latin word order counts'}</div>
+          <div class="build-line" id="bline" aria-label="Your sentence" aria-live="polite"><span class="ph">Tap the words below…</span></div>
+          <div class="build-bank" id="bbank">${q.tiles.map(t => `<button class="btile" data-i="${t.i}">${esc(t.text)}</button>`).join('')}</div>
+          <div class="row2"><button class="btn" id="bclear" type="button">Clear</button><button class="btn btn-primary" id="bcheck" type="button" disabled>Check</button></div>`;
+      } else if (q.kind === 'role') {
+        h += `<div class="q-prompt en role-ask role-${q.role}">${esc(q.prompt)}</div>
+          <div class="role-sent">${q.choices.map((c, k) => `<button class="choice tok" data-k="${k}">${esc(c.text)}</button>`).join(' ')}</div>
+          <div class="q-sub" style="margin-top:10px">${q.role === 'acc' ? 'Look for the object ending: <b>-m</b> (one) or <b>-ās / -ōs</b> (more than one)' : 'The subject has the plain ending: <b>-a / -us / -er</b>, plural <b>-ae / -ī</b>'}</div>`;
+      } else if (q.kind === 'form') {
+        h += `<div class="q-prompt form-ask"><span class="la">${esc(q.lemma.lemma)}</span>${speakBtn(q.lemma.lemma, true)}<span class="form-en">${esc(q.lemma.en)}</span></div>
+          <div class="q-sub">Which form is the <b>${esc(q.plain)}</b>?</div>`;
+        h += `<div class="choices">${q.choices.map((c, k) => `<button class="choice la-choice" data-k="${k}"><span class="k">${k + 1}</span>${esc(c.text)}</button>`).join('')}</div>`;
       } else if (q.kind === 'listen') {
         h += `<div class="q-prompt" style="justify-content:center;margin:26px 0">${speakBtn(q.prompt).replace('class="speak"', 'class="speak" style="width:96px;height:96px" id="bigSay"')}</div><div class="q-sub" style="text-align:center"><button class="link-btn" id="peek">Show the word</button></div>`;
         h += `<div class="choices">${q.choices.map((c, k) => `<button class="choice" data-k="${k}"><span class="k">${k + 1}</span>${esc(c.text)}</button>`).join('')}</div>`;
@@ -919,6 +1083,29 @@
           $('#selfYes').onclick = () => answer(q, true, null, true); $('#selfNo').onclick = () => answer(q, false, null, true);
         };
       }
+      if (q.kind === 'build') {
+        const placed = [], line = $('#bline'), bank = $('#bbank'), chk = $('#bcheck');
+        const sync = () => { chk.disabled = placed.length !== q.want; line.classList.toggle('empty', !placed.length); const ph = $('.ph', line); if (ph) ph.hidden = !!placed.length; };
+        const move = btn => {
+          if (chk.dataset.done) return;
+          const i = +btn.dataset.i;
+          if (btn.parentNode === bank) { if (placed.length >= q.want) return; placed.push(i); line.appendChild(btn); }
+          else { placed.splice(placed.indexOf(i), 1); bank.appendChild(btn); }
+          btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop'); sync();
+        };
+        $$('.btile', stage).forEach(b => b.onclick = () => move(b));
+        $('#bclear').onclick = () => { if (chk.dataset.done) return; $$('.btile', line).forEach(b => bank.appendChild(b)); placed.length = 0; sync(); };
+        chk.onclick = () => {
+          if (chk.disabled || chk.dataset.done) return; chk.dataset.done = '1';
+          const got = placed.map(i => q.tiles.find(t => t.i === i).text);
+          const res = orderOK(q.sent, got);
+          q.note = res === 'free' ? 'Your word order differs from the original – and that is fine: in Latin the endings, not the order, show who does what.' : '';
+          line.classList.add(res ? 'correct' : 'wrong'); $$('.btile', stage).forEach(b => b.disabled = true);
+          answer(q, !!res);
+        };
+        sync();
+      }
+      if (q.kind === 'role') q.choices.forEach((c, k) => { const t = q.sent.toks[k]; $$('.tok', stage)[k].dataset.role = t.cases.has('nom') && t.pos !== 'verb' ? 'S' : t.cases.has('acc') ? 'O' : t.pos === 'verb' ? 'V' : ''; });
       if (q.kind === 'listen') { const b = $('#bigSay'); setTimeout(() => speak(q.prompt, b), 250); $('#peek').onclick = e => { e.target.outerHTML = `<span class="la" style="font-size:22px">${esc(q.prompt)}</span>`; }; }
       $$('.choice', stage).forEach(b => b.onclick = () => {
         const c = q.choices[+b.dataset.k];
@@ -929,7 +1116,7 @@
       const tf = $('#tf');
       if (tf) {
         const inp = $('#ans'); setTimeout(() => inp.focus({ preventScroll: true }), 50);
-        tf.onsubmit = e => { e.preventDefault(); if (!inp.value.trim()) { inp.classList.remove('wrong'); void inp.offsetWidth; inp.classList.add('wrong'); return; } const g = grade(inp.value, q.answers, q.lang); inp.disabled = true; inp.classList.add(g ? 'correct' : 'wrong'); answer(q, !!g, g === 'close' ? inp.value : null); };
+        tf.onsubmit = e => { e.preventDefault(); if (!inp.value.trim()) { inp.classList.remove('wrong'); void inp.offsetWidth; inp.classList.add('wrong'); return; } let g = grade(inp.value, q.answers, q.lang); if (q.strict && g === 'close') g = false; inp.disabled = true; inp.classList.add(g ? 'correct' : 'wrong'); answer(q, !!g, g === 'close' ? inp.value : null); };
         $('#skip').onclick = () => { inp.disabled = true; answer(q, false); };
       }
     }
@@ -941,12 +1128,13 @@
       if (q.rules && q.rules.length) recordRules(q.rules, ok);
       if (selfGraded) return advance();
       const w = q.word;
-      const sayText = q.kind === 'fill' ? q.sentence.replace('___', q.answer) : w ? w.la : null;
+      const sayText = q.kind === 'fill' ? q.sentence.replace('___', q.answer) : q.sent ? q.sent.la : q.form || q.kind === 'form' ? q.answer : w ? w.la : null;
+      if (q.kind === 'role') stage.querySelector('.role-sent')?.classList.add('revealed');
       $$('.feedback').forEach(x => x.remove());
       const fb = document.createElement('div');
       fb.className = 'feedback ' + (ok ? 'ok' : 'no');
       fb.innerHTML = `<div class="inner"><h4>${ok ? I.check : I.x}${ok ? pick(['Optime!', 'Bene!', 'Recte!', 'Euge!'], 1)[0] + (closeInput ? ' (almost)' : '') : 'Not quite'}</h4>
-        <p>${ok && !closeInput ? (w && q.kind !== 'fill' ? `<b>${esc(w.la)}</b> = ${esc(w.en)}` : `<b>${esc(q.answer)}</b>`) : `Answer: <b>${esc(q.answer)}</b>${w && q.kind !== 'fill' ? ` – ${esc(q.reverse || q.lang === 'la' ? w.en : w.la)}` : ''}`}${q.explain ? `<br>${md(q.explain)}` : ''}</p>
+        <p>${ok && !closeInput ? (w && q.kind !== 'fill' ? `<b>${esc(w.la)}</b> = ${esc(w.en)}` : `<b>${esc(q.answer)}</b>`) : `Answer: <b>${esc(q.answer)}</b>${w && q.kind !== 'fill' ? ` – ${esc(q.reverse || q.lang === 'la' ? w.en : w.la)}` : ''}`}${q.note ? `<br>${md(q.note)}` : ''}${q.explain ? `<br>${md(q.explain)}` : ''}</p>
         <div class="row2">${sayText ? `<button class="btn fb-say">${I.speaker} Hear it</button>` : '<span></span>'}<button class="btn next-btn ${ok ? 'btn-good' : 'btn-bad'}">Continue</button></div></div>`;
       document.body.appendChild(fb); requestAnimationFrame(() => fb.classList.add('show'));
       if (sayText) fb.querySelector('.fb-say').onclick = e => speak(sayText, e.currentTarget);
@@ -1093,7 +1281,7 @@
   }
 
   // test hooks (harmless in production)
-  window.LatinApp = { grade, norm, words: ALL_WORDS, lessons: LESSONS, rules: RULES, lexicon: LEX, state: () => S, current: null, quizFor: id => quizFor(RBY.get(id)), nav: () => ({ idx: NAV.idx, stack: NAV.stack.slice(), session: SESSION && { origin: SESSION.origin, sec: SESSION.sec, started: SESSION.started, finished: SESSION.finished } }) };
+  window.LatinApp = { grade, norm, words: ALL_WORDS, lessons: LESSONS, rules: RULES, lexicon: LEX, state: () => S, current: null, quizFor: id => quizFor(RBY.get(id)), sentences: scope => sentencesFor(scope || 'all').map(x => ({ la: x.la, lesson: x.lesson, n: x.toks.length })), orderOK: (la, got) => { const x = sentencePool(LESSONS).find(y => norm(y.la) === norm(la)); return x ? orderOK(x, got) : null; }, roles: scope => roleItems(sentencesFor(scope || 'all')).map(q => ({ la: q.sent.la, role: q.role, ok: q.choices.filter(c => c.ok).map(c => c.text) })), forms: scope => formsFor(scope || 'all').length, nav: () => ({ idx: NAV.idx, stack: NAV.stack.slice(), session: SESSION && { origin: SESSION.origin, sec: SESSION.sec, started: SESSION.started, finished: SESSION.finished } }) };
 
   applyTheme(); renderChips(); route();
 })();

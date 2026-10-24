@@ -466,3 +466,34 @@ a.tag { text-decoration: none; }
 .sec-done svg { width: 10px; height: 10px; vertical-align: -1px; }
 .word-link { color: inherit; text-decoration: none; border-bottom: 1.5px dotted var(--line, #d8c9b0); }
 .results .btn-block { margin-top: 4px; }
+
+/* ---- 3.0 sentence structure: build the sentence, who does what, endings ---- */
+.mode.fresh { position: relative; }
+.mode.fresh::after { content: 'new'; position: absolute; top: 8px; right: 10px; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--good); background: var(--good-soft); padding: 2px 6px; border-radius: 99px; }
+.mode.fresh[disabled]::after { display: none; }
+.build-en { font-size: 24px !important; line-height: 1.3; }
+.build-line { min-height: 64px; margin: 14px 0 12px; padding: 10px; border-radius: 14px; border: 2px dashed var(--line); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; transition: border-color .2s, background .2s; }
+.build-line:not(.empty) { border-style: solid; background: var(--card); }
+.build-line .ph { color: var(--muted); font-size: 15px; padding: 0 6px; }
+.build-line.correct { border-color: var(--good); background: var(--good-soft); }
+.build-line.wrong { border-color: var(--bad); background: var(--bad-soft); animation: shake .4s; }
+.build-bank { display: flex; flex-wrap: wrap; gap: 8px; min-height: 52px; margin-bottom: 16px; justify-content: center; }
+.btile { font-family: var(--serif); font-size: 21px; font-weight: 600; padding: 8px 14px; min-height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); box-shadow: 0 2px 0 var(--line); cursor: pointer; }
+.btile:active { transform: translateY(1px); box-shadow: none; }
+.btile.pop { animation: pop .25s var(--ease); }
+.btile[disabled] { cursor: default; }
+.role-ask { font-size: 21px !important; display: flex; align-items: center; gap: 10px; }
+.role-sent.revealed .tok[data-role="V"]::after { background: var(--good); }
+.role-ask.role-nom::before, .role-ask.role-acc::before { content: 'S'; display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; font-size: 15px; color: #fff; background: var(--accent); flex: none; }
+.role-ask.role-acc::before { content: 'O'; background: var(--gold); }
+.role-sent { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.choice.tok { display: inline-flex; width: auto; font-family: var(--serif); font-size: 24px; font-weight: 600; padding: 10px 14px; position: relative; }
+.role-sent.revealed .tok[data-role]:not([data-role=""])::after { content: attr(data-role); position: absolute; top: -8px; right: -6px; font: 700 11px/18px var(--sans); width: 18px; height: 18px; text-align: center; border-radius: 6px; color: #fff; background: var(--muted); }
+.role-sent.revealed .tok[data-role="S"]:not([data-role=""])::after { background: var(--accent); }
+.role-sent.revealed .tok[data-role="O"]:not([data-role=""])::after { background: var(--gold); }
+.form-ask { align-items: baseline; }
+.form-ask .la { font-size: 38px; }
+.form-ask .form-en { font-family: var(--sans); font-size: 16px; font-weight: 500; color: var(--muted); }
+.refresh-card { display: flex; gap: 12px; margin-top: 14px; align-items: flex-start; }
+.refresh-card .ico svg { width: 26px; height: 26px; color: var(--gold); }
+.refresh-card small { display: block; margin-top: 6px; font-size: 13px; }
