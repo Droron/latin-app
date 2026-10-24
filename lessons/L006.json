@@ -1,0 +1,418 @@
+{
+ "schemaVersion": 2,
+ "number": 6,
+ "id": "L006",
+ "curriculum": "dcc-core-v1",
+ "title": "Many objects: -ās",
+ "subtitle": "Lesson 6 · Plural objects: -ās",
+ "rule": "accusative-plural",
+ "intro": "Last time several people acted: *Puellae labōrant*. Today the **objects** multiply. One gate is *portam*, several gates are *portās*: *Puella portās videt* 'The girl sees the gates.' New words: *porta* 'gate', *īnsula* 'island', *fābula* 'story', *narrat* 'tells', and two time words, *semper* 'always' and *numquam* 'never'.",
+ "names": [],
+ "vocab": [
+  {
+   "id": "porta",
+   "la": "porta",
+   "dict": "porta -ae f.",
+   "en": "gate",
+   "rank": 759,
+   "pos": "noun",
+   "decl": 1,
+   "gender": "f",
+   "notes": "*porta* = a gate (of a town or house); *portās* = gates, as the object.",
+   "example": {
+    "la": "Puellae portās vident.",
+    "en": "The girls see the gates."
+   },
+   "accept": [
+    "gate",
+    "door",
+    "the gate"
+   ],
+   "pron": "POR-ta · portās = POR-tahs"
+  },
+  {
+   "id": "insula",
+   "la": "īnsula",
+   "dict": "īnsula -ae f.:",
+   "en": "island",
+   "rank": 908,
+   "pos": "noun",
+   "decl": 1,
+   "gender": "f",
+   "notes": "Same family as English 'insulate' – cut off like an island.",
+   "example": {
+    "la": "Īnsula parva est, sed silvās habet.",
+    "en": "The island is small, but it has forests."
+   },
+   "accept": [
+    "island",
+    "an island",
+    "the island"
+   ],
+   "pron": "EEN-su-la"
+  },
+  {
+   "id": "fabula",
+   "la": "fābula",
+   "dict": "fābula -ae f.",
+   "en": "story, tale",
+   "rank": 966,
+   "pos": "noun",
+   "decl": 1,
+   "gender": "f",
+   "notes": "English 'fable' comes from it. *fābulās narrat* = tells stories.",
+   "example": {
+    "la": "Fēmina fābulās narrat.",
+    "en": "The woman tells stories."
+   },
+   "accept": [
+    "story",
+    "tale",
+    "account",
+    "fable"
+   ],
+   "pron": "FAH-bu-la"
+  },
+  {
+   "id": "narro",
+   "la": "narrō",
+   "dict": "narrō -āre",
+   "en": "tell, relate",
+   "rank": 910,
+   "pos": "verb",
+   "conj": "1",
+   "notes": "*narrat* = she / he tells; *narrant* = they tell. English 'narrate'.",
+   "example": {
+    "la": "Claudia fābulam longam narrat.",
+    "en": "Claudia tells a long story."
+   },
+   "accept": [
+    "tell",
+    "relate",
+    "recount",
+    "narrate",
+    "to tell"
+   ],
+   "pron": "NAR-roh · narrant = NAR-rant"
+  },
+  {
+   "id": "semper",
+   "la": "semper",
+   "dict": "semper",
+   "en": "always",
+   "rank": 149,
+   "pos": "adverb",
+   "notes": "Usually stands just before the verb: *semper rīdet* 'always laughs'.",
+   "example": {
+    "la": "Puellae semper rīdent.",
+    "en": "The girls are always laughing."
+   },
+   "accept": [
+    "always",
+    "ever"
+   ],
+   "pron": "SEM-per"
+  },
+  {
+   "id": "numquam",
+   "la": "numquam",
+   "dict": "numquam",
+   "en": "never",
+   "rank": 251,
+   "pos": "adverb",
+   "notes": "Already contains the 'not' – don't add *nōn*: *numquam timet* 'is never afraid'.",
+   "example": {
+    "la": "Iūlia numquam timet.",
+    "en": "Julia is never afraid."
+   },
+   "accept": [
+    "never",
+    "not ever"
+   ],
+   "pron": "NUM-kwam"
+  }
+ ],
+ "grammar": [
+  {
+   "title": "Plural objects: -ās",
+   "rules": [
+    "accusative-plural"
+   ],
+   "body": "One object ends in **-am**: *Puella portam videt* 'The girl sees the gate.' Several objects end in **-ās**: *Puella portās videt* 'The girl sees the gates.'\n\nAdjectives follow along: *fābulam longam* → *fābulās longās*, *multās īnsulās* 'many islands'.\n\nDon't mix up **-ae** and **-ās**. *-ae* is the plural **subject** (who acts), *-ās* the plural **object** (what is acted on): *Puellae fēminās vocant* 'The girls call the women', but *Fēminae puellās vocant* 'The women call the girls.' The endings, not the word order, tell you who does what.",
+   "table": {
+    "head": [
+     "Subject (many)",
+     "Object (one)",
+     "Object (many)",
+     "English"
+    ],
+    "laCols": [
+     0,
+     1,
+     2
+    ],
+    "rows": [
+     [
+      "puellae",
+      "puellam",
+      "puellās",
+      "girl"
+     ],
+     [
+      "portae",
+      "portam",
+      "portās",
+      "gate"
+     ],
+     [
+      "īnsulae",
+      "īnsulam",
+      "īnsulās",
+      "island"
+     ],
+     [
+      "fābulae longae",
+      "fābulam longam",
+      "fābulās longās",
+      "long story"
+     ]
+    ]
+   }
+  }
+ ],
+ "examples": [
+  {
+   "la": "Puella portās videt.",
+   "en": "The girl sees the gates.",
+   "rules": [
+    "accusative-plural"
+   ]
+  },
+  {
+   "la": "Fēminae fābulās narrant.",
+   "en": "The women tell stories.",
+   "rules": [
+    "accusative-plural",
+    "verb-3pl"
+   ]
+  },
+  {
+   "la": "Cornēlia multās īnsulās amat.",
+   "en": "Cornelia loves many islands.",
+   "rules": [
+    "accusative-plural"
+   ]
+  },
+  {
+   "la": "Puellae fēminās vocant.",
+   "en": "The girls call the women.",
+   "rules": [
+    "accusative-plural",
+    "verb-3pl"
+   ]
+  },
+  {
+   "la": "Iūlia fābulās semper laudat, sed Claudia numquam rīdet.",
+   "en": "Julia always praises the stories, but Claudia never laughs.",
+   "rules": [
+    "accusative-plural"
+   ]
+  }
+ ],
+ "exercises": [
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The girl sees the gates.",
+   "answer": "Puella portās videt.",
+   "choices": [
+    "Puella portās videt.",
+    "Puella portam videt.",
+    "Puella portae videt."
+   ],
+   "rules": [
+    "accusative-plural"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Fēminae fābulās narrant.",
+   "answerLang": "en",
+   "answer": "The women tell stories.",
+   "accept": [
+    "The women tell the stories.",
+    "The women are telling stories.",
+    "The women are telling the stories.",
+    "Women tell stories.",
+    "The women relate stories.",
+    "The women tell tales."
+   ],
+   "rules": [
+    "accusative-plural",
+    "verb-3pl"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The women call the girls.",
+   "answer": "Fēminae puellās vocant.",
+   "choices": [
+    "Fēminae puellās vocant.",
+    "Puellae fēminās vocant.",
+    "Fēminae puellae vocant."
+   ],
+   "rules": [
+    "accusative-plural",
+    "verb-3pl"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Julia always praises the stories.",
+   "answer": "Iūlia fābulās semper laudat.",
+   "accept": [
+    "Iūlia semper fābulās laudat.",
+    "Iūlia semper laudat fābulās."
+   ],
+   "rules": [
+    "accusative-plural"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Fēmina numquam fābulās longās narrat.",
+   "answerLang": "en",
+   "answer": "The woman never tells long stories.",
+   "accept": [
+    "The woman never tells long tales.",
+    "A woman never tells long stories.",
+    "The woman never relates long stories."
+   ],
+   "rules": [
+    "accusative-plural"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Puellae multās īnsulās spectant.",
+   "answerLang": "en",
+   "answer": "The girls look at many islands.",
+   "accept": [
+    "The girls are looking at many islands.",
+    "The girls watch many islands.",
+    "Girls look at many islands."
+   ],
+   "rules": [
+    "accusative-plural",
+    "verb-3pl"
+   ],
+   "review": true
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: When the girls laugh, the woman laughs too.",
+   "answer": "Ubi puellae rīdent, fēmina quoque rīdet.",
+   "accept": [
+    "Ubi puellae rīdent fēmina quoque rīdet."
+   ],
+   "rules": [
+    "verb-3pl",
+    "verb-3sg"
+   ],
+   "review": true
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The gates stand; the women stay.",
+   "answer": "Portae stant; fēminae manent.",
+   "choices": [
+    "Portae stant; fēminae manent.",
+    "Portae stat; fēminae manet.",
+    "Portās stant; fēminās manent."
+   ],
+   "rules": [
+    "nominative-plural",
+    "verb-3pl"
+   ],
+   "review": true
+  }
+ ],
+ "drills": [
+  {
+   "sentence": "Puella ___ spectat.",
+   "answer": "īnsulās",
+   "choices": [
+    "īnsulās",
+    "īnsulae",
+    "īnsula"
+   ],
+   "en": "The girl looks at the islands.",
+   "rules": [
+    "accusative-plural"
+   ]
+  },
+  {
+   "sentence": "Fēminae fābulās ___ narrant.",
+   "answer": "longās",
+   "choices": [
+    "longās",
+    "longae",
+    "longam"
+   ],
+   "en": "The women tell long stories.",
+   "rules": [
+    "accusative-plural"
+   ]
+  },
+  {
+   "sentence": "Puellae ___ vident.",
+   "answer": "portās",
+   "choices": [
+    "portās",
+    "portae",
+    "porta"
+   ],
+   "en": "The girls see the gates.",
+   "rules": [
+    "accusative-plural"
+   ]
+  },
+  {
+   "sentence": "Puellae aquam ___.",
+   "answer": "portant",
+   "choices": [
+    "portant",
+    "portat"
+   ],
+   "en": "The girls carry water.",
+   "rules": [
+    "verb-3pl"
+   ],
+   "review": true
+  },
+  {
+   "sentence": "Fēmina ___ parat.",
+   "answer": "terram",
+   "choices": [
+    "terram",
+    "terra",
+    "terrae"
+   ],
+   "en": "The woman prepares the land.",
+   "rules": [
+    "accusative-singular"
+   ],
+   "review": true
+  }
+ ],
+ "reading": {
+  "title": "Fābulae",
+  "la": "Cornēlia fēmina bona est et semper fābulās narrat. Iūlia et Claudia fābulās amant. Nunc Cornēlia fābulam longam narrat: īnsulae parvae sunt, sed silvae magnae sunt, et multae puellae viās longās spectant. Puellae nōn timent; rīdent et Cornēliam laudant. Claudia quoque fābulās parat. Sed Iūlia numquam fābulās narrat: portās spectat et manet.",
+  "en": "Cornelia is a good woman and always tells stories. Julia and Claudia love stories. Now Cornelia is telling a long story: the islands are small, but the forests are big, and many girls look at the long roads. The girls are not afraid; they laugh and praise Cornelia. Claudia also makes up stories. But Julia never tells stories: she looks at the gates and stays put.",
+  "hint": "Hunt for the **-ās** objects: *fābulās*, *viās longās*, *portās*. Then compare them with the **-ae** subjects: *īnsulae*, *silvae*, *puellae*."
+ },
+ "notes": [],
+ "written": "2026-10-21"
+}

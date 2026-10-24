@@ -1,0 +1,448 @@
+{
+ "schemaVersion": 2,
+ "number": 7,
+ "id": "L007",
+ "curriculum": "dcc-core-v1",
+ "title": "Boys and men: second declension",
+ "subtitle": "Lesson 7 · Second declension: -us, -ī, -um, -ōs",
+ "rule": "second-declension-masculine",
+ "intro": "So far every noun was feminine and ended in *-a*: *puella*, *fēmina*, *porta*. Today the men and boys of the household arrive, and they use a second set of endings. One slave is *servus*, several are *servī*; as the object he is *servum*, and several are *servōs*. New words: *puer* 'boy', *vir* 'man', *servus* 'slave', *dominus* 'master', *equus* 'horse' and *amīcus* 'friendly, a friend'.",
+ "names": [
+  {
+   "id": "marcus",
+   "la": "Mārcus",
+   "en": "Marcus (a boy's name)"
+  },
+  {
+   "id": "sextus",
+   "la": "Sextus",
+   "en": "Sextus (a boy's name)"
+  }
+ ],
+ "vocab": [
+  {
+   "id": "puer",
+   "la": "puer",
+   "dict": "puer puerī m.",
+   "en": "boy",
+   "rank": 191,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "m",
+   "notes": "*puer* drops the usual *-us*, but its other forms are regular: *puerum*, *puerī*, *puerōs*.",
+   "example": {
+    "la": "Puer equum videt.",
+    "en": "The boy sees the horse."
+   },
+   "accept": [
+    "boy",
+    "the boy",
+    "child"
+   ],
+   "pron": "PU-er · puerī = PU-er-ee"
+  },
+  {
+   "id": "vir",
+   "la": "vir",
+   "dict": "vir virī m.",
+   "en": "man",
+   "rank": 85,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "m",
+   "notes": "*vir* is a grown man (compare English 'virile'). Forms: *virum*, *virī*, *virōs*.",
+   "example": {
+    "la": "Vir labōrat.",
+    "en": "The man works."
+   },
+   "accept": [
+    "man",
+    "the man",
+    "husband"
+   ],
+   "pron": "WEER · virī = WEE-ree"
+  },
+  {
+   "id": "servus",
+   "la": "servus",
+   "dict": "servus -ī m.",
+   "en": "slave",
+   "rank": 496,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "m",
+   "notes": "*servus* is the model word for today's endings: *servus*, *servum*, *servī*, *servōs*.",
+   "example": {
+    "la": "Servī aquam portant.",
+    "en": "The slaves carry water."
+   },
+   "accept": [
+    "slave",
+    "servant",
+    "the slave"
+   ],
+   "pron": "SER-wus"
+  },
+  {
+   "id": "dominus",
+   "la": "dominus",
+   "dict": "dominus -ī m.; domina -ae f.",
+   "en": "household master, lord",
+   "rank": 241,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "m",
+   "notes": "*dominus* is the master of the house; the mistress is *domina*, with the *-a* endings you already know.",
+   "example": {
+    "la": "Dominus servōs vocat.",
+    "en": "The master calls the slaves."
+   },
+   "accept": [
+    "master",
+    "lord",
+    "household master",
+    "the master"
+   ],
+   "pron": "DO-mi-nus"
+  },
+  {
+   "id": "equus",
+   "la": "equus",
+   "dict": "equus -ī m.",
+   "en": "horse",
+   "rank": 248,
+   "pos": "noun",
+   "decl": 2,
+   "gender": "m",
+   "notes": "*equus* 'horse' (compare 'equestrian'). Plural subject *equī*, plural object *equōs*.",
+   "example": {
+    "la": "Equī māgnī sunt.",
+    "en": "The horses are big."
+   },
+   "accept": [
+    "horse",
+    "the horse"
+   ],
+   "pron": "E-kwus"
+  },
+  {
+   "id": "amicus",
+   "la": "amīcus",
+   "dict": "amīcus -a -um",
+   "en": "friendly",
+   "rank": 198,
+   "pos": "adjective",
+   "decl": "1st/2nd",
+   "notes": "As an adjective *amīcus* means 'friendly'; on its own it means 'a friend': *amīcus* (a male friend), *amīca* (a female friend).",
+   "example": {
+    "la": "Mārcus amīcus bonus est.",
+    "en": "Marcus is a good friend."
+   },
+   "accept": [
+    "friendly",
+    "friend",
+    "a friend"
+   ],
+   "pron": "a-MEE-kus"
+  }
+ ],
+ "grammar": [
+  {
+   "title": "Second declension: -us, -ī, -um, -ōs",
+   "rules": [
+    "second-declension-masculine"
+   ],
+   "body": "Many masculine nouns follow the **second declension**. One subject ends in **-us**, several in **-ī**; one object ends in **-um**, several in **-ōs**: *Servus labōrat* 'The slave works', *Servī labōrant* 'The slaves work', *Dominus servum vocat* 'The master calls the slave', *Dominus servōs vocat* 'The master calls the slaves.'\n\n*puer* and *vir* simply have no *-us* in the subject form; everything else is regular: *puerum*, *puerī*, *puerōs*; *virum*, *virī*, *virōs*.\n\nAdjectives you know take the same endings when they describe a man or boy: *servus bonus*, *equum māgnum*, *virī multī*, *puerōs parvōs*. And the old rule still holds: the ending, not the word order, tells you who does what. *Puer equum videt* and *Equum puer videt* both mean 'The boy sees the horse.'",
+   "table": {
+    "head": [
+     "Subject (one)",
+     "Subject (many)",
+     "Object (one)",
+     "Object (many)",
+     "English"
+    ],
+    "laCols": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "rows": [
+     [
+      "servus",
+      "servī",
+      "servum",
+      "servōs",
+      "slave"
+     ],
+     [
+      "equus",
+      "equī",
+      "equum",
+      "equōs",
+      "horse"
+     ],
+     [
+      "puer",
+      "puerī",
+      "puerum",
+      "puerōs",
+      "boy"
+     ],
+     [
+      "vir",
+      "virī",
+      "virum",
+      "virōs",
+      "man"
+     ],
+     [
+      "dominus bonus",
+      "dominī bonī",
+      "dominum bonum",
+      "dominōs bonōs",
+      "good master"
+     ]
+    ]
+   }
+  }
+ ],
+ "examples": [
+  {
+   "la": "Puer equum videt.",
+   "en": "The boy sees the horse.",
+   "rules": [
+    "second-declension-masculine",
+    "accusative-singular"
+   ]
+  },
+  {
+   "la": "Servī aquam portant.",
+   "en": "The slaves carry water.",
+   "rules": [
+    "second-declension-masculine",
+    "verb-3pl"
+   ]
+  },
+  {
+   "la": "Dominus servōs vocat.",
+   "en": "The master calls the slaves.",
+   "rules": [
+    "second-declension-masculine"
+   ]
+  },
+  {
+   "la": "Virī multī equōs māgnōs spectant.",
+   "en": "Many men look at the big horses.",
+   "rules": [
+    "second-declension-masculine"
+   ]
+  },
+  {
+   "la": "Mārcus et Sextus amīcī sunt.",
+   "en": "Marcus and Sextus are friends.",
+   "rules": [
+    "second-declension-masculine",
+    "nominative-plural"
+   ]
+  }
+ ],
+ "exercises": [
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The master calls the slaves.",
+   "answer": "Dominus servōs vocat.",
+   "choices": [
+    "Dominus servōs vocat.",
+    "Dominus servī vocat.",
+    "Dominum servōs vocat."
+   ],
+   "rules": [
+    "second-declension-masculine"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Puer equum videt.",
+   "answerLang": "en",
+   "answer": "The boy sees the horse.",
+   "accept": [
+    "A boy sees a horse.",
+    "The boy sees a horse.",
+    "The boy is looking at the horse.",
+    "The boy is seeing the horse."
+   ],
+   "rules": [
+    "second-declension-masculine",
+    "accusative-singular"
+   ]
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The horses are big.",
+   "answer": "Equī māgnī sunt.",
+   "choices": [
+    "Equī māgnī sunt.",
+    "Equus māgnus sunt.",
+    "Equōs māgnōs sunt."
+   ],
+   "rules": [
+    "second-declension-masculine",
+    "nominative-plural"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: The man praises the good slave.",
+   "answer": "Vir servum bonum laudat.",
+   "accept": [
+    "Vir bonum servum laudat.",
+    "Vir laudat servum bonum.",
+    "Servum bonum vir laudat."
+   ],
+   "rules": [
+    "second-declension-masculine"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Virī multī equōs spectant.",
+   "answerLang": "en",
+   "answer": "Many men look at the horses.",
+   "accept": [
+    "Many men are looking at the horses.",
+    "Many men watch the horses.",
+    "Many men look at horses."
+   ],
+   "rules": [
+    "second-declension-masculine",
+    "verb-3pl"
+   ]
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into English:",
+   "la": "Fēmina semper fābulās narrat.",
+   "answerLang": "en",
+   "answer": "The woman always tells stories.",
+   "accept": [
+    "A woman always tells stories.",
+    "The woman always tells tales.",
+    "The woman always relates stories.",
+    "The woman is always telling stories."
+   ],
+   "rules": [
+    "accusative-plural"
+   ],
+   "review": true
+  },
+  {
+   "type": "choose",
+   "prompt": "Choose the Latin for: The girls often look at the islands.",
+   "answer": "Puellae saepe īnsulās spectant.",
+   "choices": [
+    "Puellae saepe īnsulās spectant.",
+    "Puellae saepe īnsulae spectant.",
+    "Puella saepe īnsulās spectant."
+   ],
+   "rules": [
+    "accusative-plural",
+    "verb-3pl"
+   ],
+   "review": true
+  },
+  {
+   "type": "translate",
+   "prompt": "Translate into Latin: Julia never fears the gates.",
+   "answer": "Iūlia portās numquam timet.",
+   "accept": [
+    "Iūlia numquam portās timet.",
+    "Iūlia numquam timet portās."
+   ],
+   "rules": [
+    "accusative-plural"
+   ],
+   "review": true
+  }
+ ],
+ "drills": [
+  {
+   "sentence": "Dominus ___ vocat.",
+   "answer": "servum",
+   "choices": [
+    "servum",
+    "servus",
+    "servī"
+   ],
+   "en": "The master calls the slave.",
+   "rules": [
+    "second-declension-masculine"
+   ]
+  },
+  {
+   "sentence": "___ labōrant.",
+   "answer": "Servī",
+   "choices": [
+    "Servī",
+    "Servus",
+    "Servōs"
+   ],
+   "en": "The slaves work.",
+   "rules": [
+    "second-declension-masculine"
+   ]
+  },
+  {
+   "sentence": "Puellae equōs ___ amant.",
+   "answer": "parvōs",
+   "choices": [
+    "parvōs",
+    "parvās",
+    "parvī"
+   ],
+   "en": "The girls love the small horses.",
+   "rules": [
+    "second-declension-masculine"
+   ]
+  },
+  {
+   "sentence": "Multae ___ fābulās narrant.",
+   "answer": "fēminae",
+   "choices": [
+    "fēminae",
+    "fēminās",
+    "fēmina"
+   ],
+   "en": "Many women tell stories.",
+   "rules": [
+    "nominative-plural",
+    "verb-3pl"
+   ],
+   "review": true
+  },
+  {
+   "sentence": "Puella ___ parvam videt.",
+   "answer": "portam",
+   "choices": [
+    "portam",
+    "portās",
+    "porta"
+   ],
+   "en": "The girl sees the small gate.",
+   "rules": [
+    "accusative-singular"
+   ],
+   "review": true
+  }
+ ],
+ "reading": {
+  "title": "Dominus et servī",
+  "la": "Mārcus puer est et Sextus vir est. Sextus dominus bonus est; servōs multōs habet. Servī saepe labōrant: aquam portant et viās parant. Mārcus equōs amat. Nunc puer equum māgnum spectat, sed nōn timet. Sextus rīdet et puerum laudat. Ubi servī nōn labōrant, fābulās narrant, et Mārcus semper manet: fābulās longās amat. Servī et Mārcus amīcī sunt.",
+  "en": "Marcus is a boy and Sextus is a man. Sextus is a good master; he has many slaves. The slaves often work: they carry water and prepare the roads. Marcus loves horses. Now the boy is looking at a big horse, but he is not afraid. Sextus laughs and praises the boy. When the slaves are not working, they tell stories, and Marcus always stays: he loves long stories. The slaves and Marcus are friends.",
+  "hint": "Find the new endings: subjects *servī*, *amīcī*; objects *servōs*, *equōs*, *equum*, *puerum*. Then spot the old *-ās* in *viās* and *fābulās*."
+ },
+ "notes": [],
+ "written": "2026-10-22"
+}
